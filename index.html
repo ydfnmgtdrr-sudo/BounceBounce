@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Sprungkraft Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0d11; --bg2:#101218; --surface:#16181f; --surface2:#1c1f28;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+  --text:#f3f4f7; --muted:#9aa1ad; --faint:#6b7280;
+  --accent:#ff7a1a; --accent-soft:rgba(255,122,26,.14);
+  --good:#34d399; --bad:#f87171;
+  --m1:#34d399; --m2:#22d3ee; --m3:#60a5fa; --m4:#a78bfa; --m5:#fb923c; --m6:#fb5e7a;
+  --f-disp:'Anton',Impact,'Arial Narrow',sans-serif;
+  --f-cond:'Barlow Condensed',system-ui,sans-serif;
+  --f-body:'Manrope',system-ui,-apple-system,Segoe UI,sans-serif;
+  --shadow:0 12px 34px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--f-body); color:var(--text); background:var(--bg);
+  background-image:
+    radial-gradient(1200px 540px at 85% -8%, rgba(255,122,26,.13), transparent 60%),
+    radial-gradient(900px 480px at -10% 8%, rgba(96,165,250,.10), transparent 55%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased; line-height:1.5; letter-spacing:.005em;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+#app{position:relative;z-index:1;max-width:468px;margin:0 auto;min-height:100vh;
+  display:flex;flex-direction:column;
+  border-left:1px solid var(--line);border-right:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 240px);}
+
+/* App bar */
+.appbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px;
+  padding:14px 18px 13px;backdrop-filter:blur(16px);
+  background:linear-gradient(180deg,rgba(12,13,17,.92),rgba(12,13,17,.66));
+  border-bottom:1px solid var(--line);}
+.logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:20px;
+  background:radial-gradient(circle at 30% 25%,#ffb066,var(--accent));
+  box-shadow:0 6px 16px rgba(255,122,26,.4), inset 0 1px 0 rgba(255,255,255,.35);}
+.brand h1{font-family:var(--f-disp);font-size:21px;letter-spacing:.045em;line-height:.95;margin:0;
+  text-transform:uppercase;}
+.brand p{margin:1px 0 0;font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.appbar .wk{margin-left:auto;text-align:right}
+.appbar .wk b{font-family:var(--f-disp);font-size:18px;letter-spacing:.03em;display:block;line-height:1}
+.appbar .wk span{font-size:9.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+
+main{flex:1;padding:18px 16px 104px;animation:fade .34s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+/* Bottom nav */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:40;width:100%;max-width:468px;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:linear-gradient(180deg,rgba(16,18,24,.82),rgba(10,11,15,.96));
+  backdrop-filter:blur(18px);border-top:1px solid var(--line2);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;cursor:pointer;
+  color:var(--faint);font-family:var(--f-body);font-size:9.5px;font-weight:700;letter-spacing:.05em;
+  padding:5px 2px;border-radius:12px;transition:color .18s,transform .12s;text-transform:uppercase}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tab.active{color:var(--accent)}
+.tab.active svg{filter:drop-shadow(0 0 7px rgba(255,122,26,.6))}
+.tab:active{transform:scale(.9)}
+
+/* Generic */
+.section-eyebrow{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:0 2px 9px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.stagger>*{animation:fade .4s ease both}
+.stagger>*:nth-child(1){animation-delay:.02s}.stagger>*:nth-child(2){animation-delay:.07s}
+.stagger>*:nth-child(3){animation-delay:.12s}.stagger>*:nth-child(4){animation-delay:.17s}
+.stagger>*:nth-child(5){animation-delay:.22s}.stagger>*:nth-child(6){animation-delay:.27s}
+.stagger>*:nth-child(7){animation-delay:.32s}.stagger>*:nth-child(n+8){animation-delay:.36s}
+
+/* HERO (home) */
+.hero{position:relative;border-radius:22px;padding:22px 20px 20px;margin-bottom:18px;overflow:hidden;
+  background:
+    radial-gradient(420px 200px at 90% -10%,rgba(255,122,26,.32),transparent 60%),
+    linear-gradient(160deg,#1a1d27,#121319);
+  border:1px solid var(--line2);box-shadow:var(--shadow)}
+.hero .court{position:absolute;right:-30px;top:-26px;font-size:128px;opacity:.06;transform:rotate(-12deg)}
+.hero h2{font-family:var(--f-disp);font-size:30px;line-height:.92;letter-spacing:.02em;margin:0;text-transform:uppercase}
+.hero .sub{color:#ffcf9f;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.hero .meta{display:flex;gap:18px;margin-top:16px}
+.hero .meta .v{font-family:var(--f-disp);font-size:26px;line-height:1;letter-spacing:.02em}
+.hero .meta .k{font-size:9.5px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;font-weight:700;margin-top:3px}
+
+.timeline{display:flex;gap:5px;margin-top:18px}
+.timeline .seg{flex:1;height:8px;border-radius:6px;opacity:.55;transition:.2s}
+.timeline .seg.on{opacity:1;box-shadow:0 0 12px -1px currentColor;height:11px}
+.tl-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--faint);font-weight:700;letter-spacing:.04em}
+
+.statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:18px}
+.stat{padding:15px 14px;text-align:left}
+.stat .v{font-family:var(--f-disp);font-size:27px;line-height:.95;letter-spacing:.02em}
+.stat .v small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0}
+.stat .k{font-size:9.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-top:6px}
+.stat .accent{color:var(--accent)}
+
+.block-card{padding:17px 17px 16px;margin-bottom:14px;position:relative}
+.block-card .tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-disp);font-size:13px;letter-spacing:.05em;
+  padding:5px 11px;border-radius:9px;color:#0c0d11;margin-bottom:11px}
+.block-card h3{margin:0;font-size:17px;font-weight:800;letter-spacing:.01em}
+.block-card .ph{color:var(--muted);font-size:12.5px;margin-top:5px}
+.dateline{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+input[type=date],input[type=number],input[type=text]{
+  font-family:var(--f-body);background:var(--surface2);border:1px solid var(--line2);color:var(--text);
+  border-radius:10px;padding:9px 11px;font-size:13.5px;outline:none;transition:border .15s,box-shadow .15s;width:100%}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input::placeholder{color:var(--faint)}
+.btn{font-family:var(--f-cond);text-transform:uppercase;letter-spacing:.07em;font-weight:700;font-size:15px;
+  border:0;border-radius:12px;padding:12px 16px;cursor:pointer;transition:transform .12s,filter .15s;
+  background:linear-gradient(135deg,#ffa45e,var(--accent));color:#1a0e03;width:100%;
+  box-shadow:0 8px 20px rgba(255,122,26,.35)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line2);box-shadow:none}
+
+/* Mesocycle list */
+.meso-card{padding:0;margin-bottom:13px;cursor:pointer;display:block;width:100%;text-align:left;border:1px solid var(--line);
+  background:var(--surface);transition:transform .14s,border-color .2s}
+.meso-card:active{transform:scale(.985)}
+.meso-card .bar{height:5px;width:100%}
+.meso-card .body{padding:15px 16px 15px;display:flex;gap:14px;align-items:flex-start}
+.meso-badge{font-family:var(--f-disp);font-size:22px;letter-spacing:.02em;width:52px;height:52px;border-radius:13px;
+  display:grid;place-items:center;flex:none;color:#0c0d11}
+.meso-card h3{margin:0;font-size:15.5px;font-weight:800;letter-spacing:.01em}
+.meso-card .wk{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.meso-card .desc{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.45}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:7px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--muted)}
+.intens{margin-left:auto;text-align:right;flex:none}
+.intens .v{font-family:var(--f-disp);font-size:15px;letter-spacing:.02em;color:var(--text)}
+.intens .k{font-size:8.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+
+/* Meso detail */
+.detail-head{position:relative;border-radius:20px;padding:18px 18px 17px;margin-bottom:15px;overflow:hidden;
+  border:1px solid var(--line2);box-shadow:var(--shadow)}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--muted);cursor:pointer;
+  font-weight:700;font-size:12.5px;letter-spacing:.04em;padding:0;margin-bottom:13px}
+.back svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.detail-head .code{font-family:var(--f-disp);font-size:34px;line-height:.9;letter-spacing:.02em}
+.detail-head h2{margin:5px 0 0;font-size:16px;font-weight:800}
+.detail-head .wk{font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+.keynote{margin-top:12px;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  font-size:12px;color:var(--text);line-height:1.5}
+.keynote b{color:var(--accent2,inherit)}
+
+.segctl{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:5px;margin-bottom:13px}
+.segctl button{flex:1;border:0;background:none;cursor:pointer;color:var(--muted);font-family:var(--f-cond);font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;font-size:14px;padding:9px 4px;border-radius:9px;transition:.16s}
+.segctl button.on{color:#0c0d11;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.weekctl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:15px}
+.weekctl button{border:1px solid var(--line);background:var(--surface);cursor:pointer;border-radius:12px;padding:9px 4px;
+  color:var(--muted);font-weight:800;font-size:13px;letter-spacing:.04em;transition:.16s;position:relative}
+.weekctl button small{display:block;font-size:8.5px;letter-spacing:.1em;font-weight:700;margin-top:2px;color:var(--faint)}
+.weekctl button.on{color:#0c0d11}
+.weekctl button.on small{color:rgba(0,0,0,.6)}
+
+.prog{display:flex;align-items:center;gap:11px;margin-bottom:14px;padding:0 2px}
+.prog .track{flex:1;height:8px;border-radius:6px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}
+.prog .fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.prog .lbl{font-family:var(--f-disp);font-size:14px;letter-spacing:.02em;min-width:46px;text-align:right}
+
+.daytitle{font-family:var(--f-cond);text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:15px;
+  color:var(--muted);margin:0 2px 11px;display:flex;align-items:center;gap:8px}
+
+/* Exercise card */
+.ex{padding:14px 15px 13px;margin-bottom:11px;border-left:4px solid var(--cat,#888)}
+.ex.contrast{margin-top:-5px;margin-left:14px;border-left-style:dashed;background:var(--bg2)}
+.ex .top{display:flex;align-items:flex-start;gap:10px}
+.ex h4{margin:0;font-size:14.5px;font-weight:800;letter-spacing:.005em;line-height:1.25;flex:1}
+.cat-pill{font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:3px 7px;border-radius:6px;
+  color:var(--cat,#aaa);background:color-mix(in srgb,var(--cat,#888) 16%,transparent);flex:none;white-space:nowrap}
+.ex .targets{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.tg{display:flex;flex-direction:column;gap:1px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;
+  padding:7px 10px;min-width:56px}
+.tg .k{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.tg .v{font-family:var(--f-disp);font-size:16px;letter-spacing:.01em;line-height:1}
+.tg.kg .v{color:var(--accent)}
+.tg .v small{font-family:var(--f-body);font-size:10px;color:var(--muted);font-weight:600}
+.cues{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px}
+.cues b{color:#ffcf9f;font-weight:700}
+.sets{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;align-items:center}
+.setbox{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line2);background:var(--surface2);cursor:pointer;
+  font-family:var(--f-disp);font-size:13px;color:var(--muted);display:grid;place-items:center;transition:.14s;letter-spacing:.02em}
+.setbox.done{background:var(--cat,var(--accent));border-color:transparent;color:#0c0d11;animation:pop .26s ease}
+.logtoggle{margin-left:auto;background:none;border:1px solid var(--line2);color:var(--muted);border-radius:9px;
+  padding:6px 11px;cursor:pointer;font-weight:700;font-size:11px;letter-spacing:.03em;display:inline-flex;gap:5px;align-items:center}
+.logtoggle svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.set-log-panel{display:none;margin-top:10px;padding:11px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line2);animation:fade .2s ease}
+.set-log-panel.open{display:block}
+.set-log-panel .slp-header{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.set-log-panel .slp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.set-log-panel label{font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:3px;display:block}
+.set-log-panel input{padding:8px 6px;font-size:14px;font-family:var(--f-disp);letter-spacing:.02em;text-align:center;width:100%}
+.setbox.active-log{box-shadow:0 0 0 2px var(--cat,var(--accent));color:var(--text)}
+
+.deload-note{margin-top:6px;padding:13px 15px;border-radius:14px;border:1px solid rgba(248,113,113,.3);
+  background:rgba(248,113,113,.07);color:#fca5a5;font-size:12px;font-weight:600;line-height:1.5;display:flex;gap:9px}
+
+/* 1RM table */
+.rm-intro{padding:15px 16px;margin-bottom:14px}
+.rm-intro p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.rm-row{padding:13px 14px;margin-bottom:9px}
+.rm-row .head{display:flex;align-items:center;gap:11px}
+.rm-row .nm{font-weight:800;font-size:14px;flex:1}
+.rm-row .inp{display:flex;align-items:center;gap:7px}
+.rm-row .inp input{width:78px;text-align:center;font-family:var(--f-disp);font-size:17px;letter-spacing:.02em;padding:7px}
+.rm-row .inp span{font-size:11px;color:var(--muted);font-weight:700}
+.pcts{display:flex;gap:6px;overflow-x:auto;margin-top:11px;padding-bottom:3px;-webkit-overflow-scrolling:touch}
+.pcts::-webkit-scrollbar{height:5px}.pcts::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+.pc{flex:none;text-align:center;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:6px 9px;min-width:48px}
+.pc .p{font-size:8.5px;color:var(--faint);font-weight:800;letter-spacing:.06em}
+.pc .w{font-family:var(--f-disp);font-size:15px;letter-spacing:.01em;margin-top:1px}
+.pc.hot{border-color:var(--accent);background:var(--accent-soft)}
+.pc.hot .w{color:var(--accent)}
+.backup-bar{display:flex;gap:8px;margin-bottom:14px}
+.backup-bar button{flex:1;font-family:var(--f-cond);text-transform:uppercase;letter-spacing:.07em;font-weight:700;font-size:13px;
+  border:1px solid var(--line2);border-radius:12px;padding:11px 8px;cursor:pointer;background:var(--surface);color:var(--text);
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s}
+.backup-bar button:active{background:var(--surface2)}
+.backup-bar button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.backup-bar .imp{color:var(--muted)}
+.backup-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1c1f28;border:1px solid var(--line2);
+  color:var(--text);font-size:13px;font-weight:700;padding:10px 18px;border-radius:12px;z-index:100;
+  animation:fade .2s ease;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tip{padding:13px 15px;border-radius:13px;background:rgba(255,122,26,.07);border:1px solid rgba(255,122,26,.22);
+  color:#ffcf9f;font-size:11.5px;line-height:1.5;display:flex;gap:9px;margin-top:4px}
+
+/* Jump tracker */
+.jump-row{padding:14px 15px;margin-bottom:11px}
+.jump-row .rh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.jump-row .rh .lab{font-weight:800;font-size:13.5px}
+.jump-row .rh .ms{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#0c0d11;
+  padding:3px 8px;border-radius:7px}
+.jgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.jgrid.dates{grid-template-columns:1fr;margin-bottom:8px}
+.jfield label{font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:4px;display:block}
+.jfield input{text-align:center;padding:8px 6px;font-size:14px;font-family:var(--f-disp);letter-spacing:.02em}
+.jfield.note input{font-family:var(--f-body);font-size:12px;text-align:left}
+.jdelta{display:flex;gap:14px;margin-top:11px;padding-top:11px;border-top:1px dashed var(--line2)}
+.jdelta .d{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.jdelta .d b{display:block;font-family:var(--f-disp);font-size:16px;letter-spacing:.02em;margin-top:2px;color:var(--text)}
+.jdelta .d b.up{color:var(--good)} .jdelta .d b.dn{color:var(--bad)}
+.chart-card{padding:16px 14px 12px;margin-bottom:16px}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:10.5px;font-weight:700;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* Guide */
+.gp{padding:15px 16px;margin-bottom:11px;border-left:4px solid var(--accent)}
+.gp h4{margin:0 0 6px;font-size:14.5px;font-weight:800}
+.gp p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
+.gp .num{font-family:var(--f-disp);font-size:13px;color:var(--accent);margin-right:7px}
+.proto{padding:16px 17px;margin:16px 0 14px;border:1px solid rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.proto h3{font-family:var(--f-disp);font-size:16px;letter-spacing:.04em;color:#fca5a5;margin:0 0 12px;text-transform:uppercase}
+.proto li{font-size:12px;color:#f3f4f7;line-height:1.5;margin-bottom:9px;list-style:none;padding-left:24px;position:relative}
+.proto li::before{content:"⚠";position:absolute;left:0;top:0;font-size:12px}
+.ov-tbl{margin-top:6px}
+.ov-row{padding:14px 15px;margin-bottom:10px;border-left:4px solid var(--cat)}
+.ov-row .h{display:flex;align-items:center;gap:10px}
+.ov-row .bd{font-family:var(--f-disp);width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+  font-size:17px;color:#0c0d11;flex:none}
+.ov-row .ttl{font-weight:800;font-size:13.5px}
+.ov-row .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:11px}
+.ov-row .meta div{font-size:11px}
+.ov-row .meta .k{color:var(--faint);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:8.5px}
+.ov-row .meta .v{color:var(--text);margin-top:1px}
+.foot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.05em;padding:18px 10px 4px;line-height:1.6}
+.reset-link{background:none;border:0;color:var(--faint);text-decoration:underline;cursor:pointer;font-size:11px;font-family:var(--f-body)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="appbar">
+    <div class="logo">🏐</div>
+    <div class="brand">
+      <h1>Sprungkraft</h1>
+      <p>John Evans Blueprint</p>
+    </div>
+    <div class="wk" id="wkBadge"></div>
+  </header>
+  <main id="screen"></main>
+  <nav class="tabbar" id="tabbar"></nav>
+</div>
+
+<script>
+const DATA = {"meta": {"title": "🏐  VOLLEYBALL SPRUNGKRAFT — MAKROZYKLUS  |  John Evans Blueprint", "principlesLine": "Trust the Process · Progressive Overload · Variety · Individuality · Recovery · Anti Blowup"}, "overview": {"headers": ["Meso", "Wochen", "Monat", "Fokus", "Kraft-Methode", "Hauptübungen", "Vol.", "Int. %1RM", "Wdh", "Sätze", "RPE", "Plyometrie", "THP-Prinzip", "John Evans Key"], "rows": [[1, "W1–W4", "Mo 1", "Allg. Kraftaufbau (GPP)", "5×4 Compound  /  Linear Progression", "Back Squat, Deadlift, RDL, Hip Thrust, Push Press", "Hoch", "55–70%", "8–12", "2–5", "6–7", "Pogo Jumps, Broad Jump sub-max, Box Step-Up", "General Strength Base", "Viel Variation · Bewegungsmuster vor Gewicht · Mix in Clean Pulls & Hang Cleans"], [2, "W5–W8", "Mo 2", "Hypertrophie & Muskelaufbau", "3–4×8–12  Moderate Load", "Back Squat, Front Squat, Deadlift, Hip Thrust, RDL", "Hoch", "65–75%", "8–12", "3–4", "7–8", "Depth Drop, Box Jump, Lateral Bound", "Accumulation Phase", "Muskelmasse aufbauen · Posterior Chain · Erste Sprungspezifität"], [3, "W9–W12", "Mo 3", "Max-Kraft Entwicklung", "5/3/1 Wave Loading  /  10×2 Maximal", "Back Squat, Deadlift, Power Clean, Clean Pulls @105%", "Mittel", "75–90%", "1–5", "4–5", "7–8", "Box Jump, Hurdle Jump, Broad Jump", "Intensification I – Absolute Strength", "10×2 Schema · Clean Pulls supramaximal @105% · RFD aufbauen"], [4, "W13–W16", "Mo 4", "Kraft-Explosivität / Eccentric", "Cluster Sets 3×(2+2+2) @80–90%  /  Exz. Tempo 5sek", "Squat Cluster, Hang Clean, Jump Squat, Eccentric Squat", "Mittel", "80–90%", "2–4", "4–5", "8–9", "Depth Jump, Reactive Box, Contrast Jumps", "Intensification II – Eccentric Strength", "Exzentrisch 5sek + Kontrast-Sprung · SSC aufbauen · Cluster Sets"], [5, "W17–W20", "Mo 5", "Reaktivkraft / Peaking", "Heavy Singles 90–97%  /  Triplets", "Back Squat 1RM, Power Clean Peak, Jump Squat @20–25%", "Niedrig", "88–97%", "1–3", "3–5", "8–9", "Approach Jump, Max Effort Box, Depth Jump", "Peak Phase – Reactive Power", "Max Power Expression · Plyometrie spezifisch · CNS-Management"], [6, "W21–W24", "Mo 6", "Wettkampf-Transfer & Deload", "Low Volume High Intensity Maintenance", "Back Squat light, Hang Clean, Hip Thrust, Approach Jump", "Niedrig", "75–85%", "3–5", "2–3", "7", "Approach Jump, Block Jump, Reaktions-Drills", "Transfer & Deload", "Kraft erhalten · Volleyball-Transfer · Frisch in den Wettkampf"]]}, "antiBlowup": ["1. Nie 2 sehr intensive Einheiten in Folge — immer min. 1 Recovery-Tag dazwischen", "2. Wenn Technik bricht → Gewicht runter. Kein Ego-Lifting. Technik ist König.", "3. Woche 4 jedes Monats = Deload: Volumen −40%, Intensität −10–15% halten", "4. Schmerz ≠ Erschöpfung — bei Gelenkschmerzen sofort stoppen und Ursache suchen", "5. Kein Springen auf müden Beinen — Plyometrie IMMER frisch, am Anfang der Einheit", "6. Progressive Overload gilt für ALLES: +2,5 kg, +1 Satz, −5 sek Pause — nie stagnieren"], "tracker": {"lifts": [{"key": "back_squat", "name": "Back Squat", "default": 100}, {"key": "front_squat", "name": "Front Squat", "default": 100}, {"key": "deadlift", "name": "Deadlift", "default": 100}, {"key": "rdl", "name": "Romanian DL", "default": 100}, {"key": "hip_thrust", "name": "Hip Thrust", "default": 100}, {"key": "power_clean", "name": "Power Clean", "default": 100}, {"key": "hang_clean", "name": "Hang Clean", "default": 100}, {"key": "clean_pull", "name": "Clean Pull", "default": 100}, {"key": "jump_squat", "name": "Jump Squat @30%", "default": 100}, {"key": "leg_press", "name": "Leg Press", "default": 100}, {"key": "bulgarian", "name": "Bulgarian Split Squat", "default": 100}, {"key": "push_press", "name": "Push Press", "default": 100}, {"key": "pullup", "name": "Weighted Pull-Up", "default": 100}], "percents": [{"label": "55%", "value": 0.55}, {"label": "60%", "value": 0.6}, {"label": "65%", "value": 0.65}, {"label": "70%", "value": 0.7}, {"label": "75%", "value": 0.75}, {"label": "80%", "value": 0.8}, {"label": "82%", "value": 0.82}, {"label": "85%", "value": 0.85}, {"label": "88%", "value": 0.88}, {"label": "90%", "value": 0.9}, {"label": "93%", "value": 0.93}, {"label": "95%", "value": 0.95}, {"label": "97%", "value": 0.97}, {"label": "100%", "value": 1.0}, {"label": "105%", "value": 1.05}], "tip": "💡 Tipp: Aktualisiere deinen 1RM alle 4 Wochen (nach jedem Deload). Runde Gewichte auf 2,5 kg. Für Jump Squat: verwende 20–30% deines Back-Squat 1RM für maximalen Power Output."}, "mesos": [{"code": "M1", "title": "MESOZYKLUS 1  |  General Volume & GPP  |  W1–W4", "subtitle": "John Evans: Viel allgemeine Arbeit, 3× pro Woche. Compound 5×4, Accessory 10–15 Wdh. Mix aus Clean Pulls, Hang Cleans, Deadlifts. Basis für alles weitere. ★opt = optional / nach Bedarf austauschen.", "weeks": "W1–W4", "days": [{"name": "TAG 1 – Kniedom / Squat", "exercises": [{"cat": "Squat", "name": "Back Squat (High Bar)", "repGoal": "4–5", "pctLabel": "65%", "cues": "Tiefe Hocke, Knie über Zehen, Brustkorb hoch, Absätze am Boden", "sets": 5, "calc": {"lift": "back_squat", "pct": 0.65}}, {"cat": "Squat", "name": "Bulgarian Split Squat", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "Hinteres Bein auf Bank, langsames Exzentrisch, Kniepush", "sets": 3, "calc": null}, {"cat": "Squat", "name": "Leg Press", "repGoal": "10–12", "pctLabel": "60%", "cues": "Volle Range, Knie nicht durchstrecken am Ende", "sets": 3, "calc": {"lift": "leg_press", "pct": 0.6}}, {"cat": "Squat ★opt", "name": "Box Step-Up  ★ oder Front Squat", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "★ OPTIONAL: Box Step-Up (kontrolliert, Gegenbein passiv) ODER Front Squat 3×5 @55% — nach Technik & Energie wählen. Akkumulationsvolumen!", "sets": 3, "calc": null}, {"cat": "Wade", "name": "Standing Calf Raise (einbeinig)", "repGoal": "15 je Seite", "pctLabel": "BW / Tech", "cues": "Volle ROM: tief absenken, maximal hochdrücken. Fußgelenk-Elastizität für Pogo & Broad Jump", "sets": 3, "calc": null}, {"cat": "Wade", "name": "Seated Calf Raise (Soleus)", "repGoal": "15–20", "pctLabel": "BW / Tech", "cues": "Soleus (tiefer Wadenmuskel) — Sprungstabilität und SSC im Fußgelenk. Beide Wadenköpfe abdecken!", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Pogo Jumps", "repGoal": "10", "pctLabel": "BW / Tech", "cues": "Kurze Bodenkontaktzeit, Fußgelenk-Elastizität, minimal Kniebeuge", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Broad Jump (sub-maximal)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Armschwung, weiche Landung, ca. 70% der max. Weite", "sets": 3, "calc": null}]}, {"name": "TAG 2 – Hüftdom / Hip Hinge  +  Olympische Züge Intro", "exercises": [{"cat": "Hinge", "name": "Conventional Deadlift", "repGoal": "4–5", "pctLabel": "65%", "cues": "Schulterblätter runter, Lat aktiv, neutraler Rücken, push floor away", "sets": 5, "calc": {"lift": "deadlift", "pct": 0.65}}, {"cat": "Hinge", "name": "Romanian Deadlift (RDL)", "repGoal": "8", "pctLabel": "55%", "cues": "Hüfte zurück, Knie leicht gebeugt, Dehnung Hamstring spüren", "sets": 4, "calc": {"lift": "rdl", "pct": 0.55}}, {"cat": "Hinge", "name": "Hip Thrust", "repGoal": "10", "pctLabel": "65%", "cues": "Volle Hüftextension, 1 sek Squeeze oben, Oberkörper stabil", "sets": 4, "calc": {"lift": "hip_thrust", "pct": 0.65}}, {"cat": "Olympic", "name": "Clean Pull (Intro)", "repGoal": "4", "pctLabel": "70%", "cues": "Triple Extension: Hüfte, Knie, Fußgelenk — kein Arm-Zug!", "sets": 4, "calc": {"lift": "clean_pull", "pct": 0.7}}, {"cat": "Olympic", "name": "Hang Clean (Technik)", "repGoal": "3", "pctLabel": "60%", "cues": "Knie-Position, explosiver Hip Drive, schnelles Untersitzen", "sets": 5, "calc": {"lift": "hang_clean", "pct": 0.6}}, {"cat": "Hinge", "name": "Nordic Hamstring Curl", "repGoal": "4–5", "pctLabel": "BW / Tech", "cues": "Exzentrischer Fokus, Injury Prevention, langsam runter", "sets": 3, "calc": null}, {"cat": "Squat", "name": "Lateral Lunge (Technik)", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "FRONTALES MUSTER — Knie über Zehe, Hüfte zurück, Standbein gestreckt. Volleyball: Blockbewegung & Auslage. Technik lernen bevor es schwerer wird!", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Vertical Jump Test", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Sprunghöhe notieren — Basiswert! Selbe Bedingungen immer", "sets": 3, "calc": null}]}, {"name": "TAG 3 – Oberkörper + Core + Athletik", "exercises": [{"cat": "Upper", "name": "Push Press", "repGoal": "5–6", "pctLabel": "65%", "cues": "Sprungspezifisch: Schulter-Kraft für Block & Smash, Hüft-Dip", "sets": 4, "calc": {"lift": "push_press", "pct": 0.65}}, {"cat": "Upper", "name": "Pull-Up / Lat Pulldown", "repGoal": "6–8", "pctLabel": "BW / Tech", "cues": "Volle Streckung unten, Brust zur Stange, Lat aktivieren", "sets": 4, "calc": null}, {"cat": "Upper", "name": "Barbell Row", "repGoal": "8", "pctLabel": "65%", "cues": "Horizontalzug, Rücken flach, Ellbogen nah am Körper", "sets": 3, "calc": null}, {"cat": "Olympic", "name": "Panda Pull", "repGoal": "3", "pctLabel": "70%", "cues": "Zweiphasige Extension: 1. Knie, dann 2. Hüfte — Umkehrpunkt beachten", "sets": 4, "calc": {"lift": "clean_pull", "pct": 0.7}}, {"cat": "Core", "name": "Pallof Press", "repGoal": "10 je Seite", "pctLabel": "BW / Tech", "cues": "Anti-Rotation Core-Stabilität, kein Drehen der Hüfte", "sets": 3, "calc": null}, {"cat": "Core", "name": "Dead Bug", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "Lendenwirbel am Boden, Koordination Arm-Bein, Atemkontrolle", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Box Jump (40 cm)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Weiche Landung, volle Hüftextension beim Absprung, beide Beine", "sets": 3, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}, {"code": "M2", "title": "MESOZYKLUS 2  |  Heavy Lifting & Hypertrophie  |  W5–W8", "subtitle": "John Evans: Priorisiere Cleans. Heavy Lifting 4–6 Wdh @85%. Mehr spezifische Accessory-Arbeit. Hypertrophie-Load für Squat und Hinge parallel. Intensität steigt gegenüber Meso 1.", "weeks": "W5–W8", "days": [{"name": "TAG 1 – Heavy Squat + spezifisches Accessory", "exercises": [{"cat": "Squat", "name": "Back Squat", "repGoal": "4–6", "pctLabel": "82%", "cues": "Intensivere Last als Meso 1 — Fokus auf Kraft, nicht Volumen", "sets": 4, "calc": {"lift": "back_squat", "pct": 0.82}}, {"cat": "Squat", "name": "Front Squat", "repGoal": "5", "pctLabel": "75%", "cues": "Quad-Fokus, aufrechter Oberkörper, progressive Überladung", "sets": 3, "calc": {"lift": "front_squat", "pct": 0.75}}, {"cat": "Squat", "name": "Hack Squat (Maschine)", "repGoal": "8", "pctLabel": "BW / Tech", "cues": "Niedriger Fuß-Stand = mehr Quad, volle ROM", "sets": 3, "calc": null}, {"cat": "Squat", "name": "Bulgarian Split Squat (schwer)", "repGoal": "6 je", "pctLabel": "BW / Tech", "cues": "Schwerer als Meso 1 — Progressive Overload! Zusatzgewicht", "sets": 4, "calc": null}, {"cat": "Squat", "name": "Leg Extension (Isolation)", "repGoal": "10–12", "pctLabel": "BW / Tech", "cues": "Abschluss Quad-Isolation, langsam exzentrisch 3 sek", "sets": 3, "calc": null}, {"cat": "Wade", "name": "Single Leg Calf Raise (stehend)", "repGoal": "12 je Seite", "pctLabel": "BW / Tech", "cues": "Einbeinig = volleyball-spezifisch. Volle Extension, langsames Exzentrisch 3 sek", "sets": 4, "calc": null}, {"cat": "Wade", "name": "Donkey Calf Raise / Beinpresse-Wade", "repGoal": "15", "pctLabel": "BW / Tech", "cues": "Maximaler Stretch unten — Hypertrophie-Fokus. Posterior-Chain-Ergänzung", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Depth Drop (50 cm Box)", "repGoal": "6", "pctLabel": "BW / Tech", "cues": "Landen und SOFORT absorbieren — kein Absprung. SSC-Intro", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Box Jump (50 cm)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Volle Hüftextension beim Absprung, kontrollierte Landung", "sets": 4, "calc": null}]}, {"name": "TAG 2 – Priorität Cleans & Heavy Hinge", "exercises": [{"cat": "Olympic", "name": "Power Clean (Hauptübung)", "repGoal": "3", "pctLabel": "75%", "cues": "Triple Extension perfekt! Priorisierung laut John Evans", "sets": 5, "calc": {"lift": "power_clean", "pct": 0.75}}, {"cat": "Olympic", "name": "Hang Clean", "repGoal": "3", "pctLabel": "72%", "cues": "Knie-Position, schnelles Untersitzen, Ellbogen hoch", "sets": 4, "calc": null}, {"cat": "Olympic", "name": "Clean Pull @85%", "repGoal": "3", "pctLabel": "85%", "cues": "Heavy Pull — Kraft für die Zuglinie entwickeln", "sets": 5, "calc": {"lift": "clean_pull", "pct": 0.85}}, {"cat": "Hinge", "name": "Deadlift (schwer)", "repGoal": "4–6", "pctLabel": "82%", "cues": "Heavy, Hypertrophie-Load — progressiver Anstieg W1→W3", "sets": 4, "calc": {"lift": "deadlift", "pct": 0.82}}, {"cat": "Hinge", "name": "RDL", "repGoal": "8–10", "pctLabel": "65%", "cues": "Stretch am Boden spüren, Hamstring-Hypertrophie", "sets": 4, "calc": {"lift": "rdl", "pct": 0.65}}, {"cat": "Hinge", "name": "Hip Thrust", "repGoal": "10–12", "pctLabel": "70%", "cues": "Hypertrophie-Fokus Glute, 1 sek Squeeze", "sets": 4, "calc": {"lift": "hip_thrust", "pct": 0.7}}, {"cat": "Hinge", "name": "Glute Ham Raise (GHR)", "repGoal": "8", "pctLabel": "BW / Tech", "cues": "Hamstring-Stärke für Sprung-Schutz, exzentrischer Fokus", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Lateral Bound", "repGoal": "5 je Seite", "pctLabel": "BW / Tech", "cues": "Seitliche Explosivität, sprung-relevant für Volleyball", "sets": 4, "calc": null}]}, {"name": "TAG 3 – Oberkörper schwer + Volleyball Approach", "exercises": [{"cat": "Upper", "name": "Push Press (schwer)", "repGoal": "6", "pctLabel": "75%", "cues": "Rhythmisch, Schulter-Handgelenk-Linie, progressiv", "sets": 4, "calc": {"lift": "push_press", "pct": 0.75}}, {"cat": "Upper", "name": "Weighted Pull-Up", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Zusatzgewicht progressive — +2,5 kg pro Woche wenn möglich", "sets": 3, "calc": null}, {"cat": "Upper", "name": "Dumbbell Row", "repGoal": "10 je", "pctLabel": "BW / Tech", "cues": "Voller ROM, Rücken stabil, Ellbogen nah", "sets": 4, "calc": null}, {"cat": "Upper", "name": "Cable Face Pull", "repGoal": "15", "pctLabel": "BW / Tech", "cues": "Schultergesundheit — NICHT überspringen! Rotatorenmanschette", "sets": 3, "calc": null}, {"cat": "Core", "name": "Ab Rollout", "repGoal": "8", "pctLabel": "BW / Tech", "cues": "Core Anticipation, Hüfte stabil, langsam verlängern", "sets": 3, "calc": null}, {"cat": "Squat", "name": "Lateral Lunge (Kurzhantel)", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "Mit KB/Kurzhantel — schwerer als M1. Frontales Muster Kraft aufbauen. Direkt danach Lateral Bound → Kontrast-Methode!", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Lateral Bound → sofort nach Lateral Lunge", "repGoal": "5 je Seite", "pctLabel": "BW / Tech", "cues": "KONTRAST: Kraft frontal → Explosivität frontal. Volleyball Blockbewegung trainieren. Bodenkontakt minimal!", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Broad Jump (intensiver)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Ca. 80% max. Weite — intensiver als Meso 1", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Approach Jump (Volleyball)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Anlauf 3–4 Schritte, voller Armschwung, Höhe messen!", "sets": 4, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}, {"code": "M3", "title": "MESOZYKLUS 3  |  Absolute Strength — 10×2 Schema  |  W9–W12", "subtitle": "John Evans Kernblock: 10 Sätze × 2 Wdh. Clean Pulls @105% (supramaximal). Neuronale Effizienz über Volumen. Intensive Plyometrie als Kontrastmethode.", "weeks": "W9–W12", "days": [{"name": "TAG 1 – 10×2 Back Squat + Absolute Strength", "exercises": [{"cat": "Squat", "name": "Back Squat — 10×2 Schema", "repGoal": "2", "pctLabel": "90%", "cues": "John Evans Kernblock! 10 Sätze × 2 Wdh — neuronale Effizienz. 3 Min Pause", "sets": 10, "calc": {"lift": "back_squat", "pct": 0.9}}, {"cat": "Squat", "name": "Back Squat Backoff Sets", "repGoal": "3", "pctLabel": "80%", "cues": "Qualitätsarbeit nach den Topsets, volle ROM", "sets": 3, "calc": {"lift": "back_squat", "pct": 0.8}}, {"cat": "Squat", "name": "Box Squat (parallel)", "repGoal": "3", "pctLabel": "75%", "cues": "Pause auf Box — Explosivität aus dem Loch, kein Bounce", "sets": 4, "calc": {"lift": "back_squat", "pct": 0.75}}, {"cat": "Wade", "name": "Weighted Calf Raise (mit Gewicht)", "repGoal": "8–10", "pctLabel": "BW / Tech", "cues": "Zusatzgewicht! Max-Kraft-Phase auch für Wade. Volle ROM. Slow Ecc 3 sek → explosive Konzentrik", "sets": 4, "calc": null}, {"cat": "Wade", "name": "Pogo Jump Variation (Fußgelenk-SSC)", "repGoal": "15", "pctLabel": "BW / Tech", "cues": "Reiner Fußgelenks-Einsatz, kein Knie — SSC im Fußgelenk isoliert trainieren", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Jump Squat @30% Squat 1RM", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "20–30% = peak Power Output Zone. Maximal explosiv — Boden verlassen!", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Box Jump (60 cm)", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Maximal konzentrisch — Höhe! Vollständige Hüftextension", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Hurdle Jump", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Über Hürden, kurze Bodenkontaktzeit — SSC aktivieren", "sets": 4, "calc": null}]}, {"name": "TAG 2 – Clean Pulls @105% + Power Clean 10×2", "exercises": [{"cat": "Olympic", "name": "Clean Pull @105% (supramaximal)", "repGoal": "3", "pctLabel": "105%", "cues": "John Evans Kernübung! Über 1RM — trainiert die Beschleunigungsphase direkt", "sets": 4, "calc": {"lift": "clean_pull", "pct": 1.05}}, {"cat": "Olympic", "name": "Panda Pull @105%", "repGoal": "3", "pctLabel": "105%", "cues": "Zweiphasig über 1RM — Kraft im Zug entwickeln, kein Arm-Zug", "sets": 4, "calc": {"lift": "clean_pull", "pct": 1.05}}, {"cat": "Olympic", "name": "Power Clean — 10×2 Schema", "repGoal": "2", "pctLabel": "80%", "cues": "Wie beim Squat: 10×2 für max. neuronale Adaptation", "sets": 10, "calc": {"lift": "power_clean", "pct": 0.8}}, {"cat": "Hinge", "name": "Deadlift @90–95%", "repGoal": "2", "pctLabel": "90%", "cues": "Maximale Kraftproduktion — Kein Volumen, reine Intensität", "sets": 5, "calc": {"lift": "deadlift", "pct": 0.9}}, {"cat": "Hinge", "name": "RDL (Ergänzung)", "repGoal": "5", "pctLabel": "70%", "cues": "Hamstring-Tension halten, nicht zu schwer — Qualität", "sets": 3, "calc": {"lift": "rdl", "pct": 0.7}}, {"cat": "Plyos", "name": "Depth Jump (60 cm)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Schnell reaktiv — SSC maximieren, minimale Kniebeuge bei Landung", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Broad Jump (Anlauf)", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "3-Schritt Anlauf, explosive Hüftextension, max. Weite", "sets": 5, "calc": null}]}, {"name": "TAG 3 – Max Kraft Oberkörper + Intensive Plyometrie", "exercises": [{"cat": "Upper", "name": "Push Press (schwer)", "repGoal": "3–4", "pctLabel": "82%", "cues": "Schwere Overhead-Kraft — Schulter-Explosivität für Block", "sets": 4, "calc": {"lift": "push_press", "pct": 0.82}}, {"cat": "Upper", "name": "Weighted Pull-Up (schwer)", "repGoal": "3–4", "pctLabel": "BW / Tech", "cues": "BW +10–15 kg — Progressive Overload! Max Zugkraft", "sets": 4, "calc": null}, {"cat": "Upper", "name": "Pendlay Row", "repGoal": "4–5", "pctLabel": "75%", "cues": "Explosive Zugphase, Rücken parallel zum Boden", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Weighted Jump Squat @30%", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "20–30% Back Squat 1RM = maximale Watt-Ausgabe", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Max Vertical Jump (Test + Training)", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Messung mit Anlauf! Höhe notieren. Video aufnehmen.", "sets": 5, "calc": null}, {"cat": "Core", "name": "Hanging Leg Raise", "repGoal": "10", "pctLabel": "BW / Tech", "cues": "Sprung-Stabilitätskette, Hüftbeugerkraft", "sets": 3, "calc": null}, {"cat": "Core", "name": "Pallof Press Variationen", "repGoal": "8 je", "pctLabel": "BW / Tech", "cues": "Anti-Rotations-Stärke — Kraftübertrag Boden → Schulter", "sets": 3, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}, {"code": "M4", "title": "MESOZYKLUS 4  |  Eccentric Strength + Cluster Sets  |  W13–W16", "subtitle": "John Evans Meso 4: Exzentrische Kraft = Energiespeicher für den Stretch-Shortening-Cycle. 5–6 Sek. Negativphase + sofortiger Kontrast-Sprung. Cluster Sets für Explosivität @80–90%. SSC-Entwicklung.", "weeks": "W13–W16", "days": [{"name": "TAG 1 – Exzentrische Kraft + Kontrast-Sprung", "exercises": [{"cat": "Squat", "name": "Slow Eccentric Squat (5 sek runter)", "repGoal": "3", "pctLabel": "85%", "cues": "5–6 Sekunden Negativphase! Dann EXPLOSIV nach oben. Energiespeicher = SSC", "sets": 5, "calc": {"lift": "back_squat", "pct": 0.85}}, {"cat": "Plyos", "name": "→ Kontrast: Box Jump sofort danach", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "DIREKT nach Eccentric Squat — nutze die neurale Potenzierung!", "sets": 5, "calc": null}, {"cat": "Squat", "name": "Back Squat Cluster 3×(2+2+2)", "repGoal": "2+2+2", "pctLabel": "82%", "cues": "15 sek Pause im Set — maximale Explosivität je Wiederholung", "sets": 3, "calc": {"lift": "back_squat", "pct": 0.82}}, {"cat": "Wade", "name": "Slow Eccentric Calf Raise (5 sek runter)", "repGoal": "8 je Seite", "pctLabel": "BW / Tech", "cues": "5 Sek Negativphase — exzentrische Wade wie exzentrischer Squat! SSC im Fußgelenk maximal", "sets": 4, "calc": null}, {"cat": "Wade", "name": "→ Kontrast: Pogo Jump sofort danach", "repGoal": "10", "pctLabel": "BW / Tech", "cues": "DIREKT nach Eccentric Calf Raise — neurale Potenzierung im Fußgelenk nutzen!", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Jump Squat (Barbell)", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "@30% Squat 1RM — Boden verlassen! Maximale Sprungintention", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Reactive Box Jump (60 cm)", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Schnell runter, schnell hoch — SSC maximieren. Minimal Pause", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Depth Jump → Box Jump", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Vom Box fallen, sofort reaktiv auf nächste Box — maximaler SSC", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Approach Jump Volleyball", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Volleyball-Anlauf — Höhe messen! Nähert sich dem Transfer", "sets": 5, "calc": null}]}, {"name": "TAG 2 – Eccentric Hinge + Power Clean Cluster", "exercises": [{"cat": "Hinge", "name": "Slow Eccentric Romanian DL", "repGoal": "4", "pctLabel": "80%", "cues": "5 Sekunden Negativphase — maximale Hamstring-Spannung und -Kraft", "sets": 5, "calc": {"lift": "rdl", "pct": 0.8}}, {"cat": "Olympic", "name": "Power Clean", "repGoal": "3", "pctLabel": "75%", "cues": "Triple Extension — Hüfte, Knie, Fußgelenk. Schnell und präzise", "sets": 5, "calc": {"lift": "power_clean", "pct": 0.75}}, {"cat": "Olympic", "name": "Hang Clean", "repGoal": "3", "pctLabel": "72%", "cues": "Reaktive Version — Knie-Position, explosiver Hip Drive", "sets": 4, "calc": null}, {"cat": "Hinge", "name": "Deadlift Cluster 2×(2+2)", "repGoal": "2+2", "pctLabel": "85%", "cues": "Heavy, explosive Absicht — nicht grinden. Cluster für Qualität", "sets": 3, "calc": {"lift": "deadlift", "pct": 0.85}}, {"cat": "Hinge", "name": "Hip Thrust Explosiv", "repGoal": "6", "pctLabel": "70%", "cues": "So schnell wie möglich nach oben! Explosiver Hüft-Drive", "sets": 4, "calc": {"lift": "hip_thrust", "pct": 0.7}}, {"cat": "Hinge", "name": "Reverse Hyper", "repGoal": "12", "pctLabel": "BW / Tech", "cues": "Posterior Chain Rehab/Strength — Lendenwirbelsäule entlasten", "sets": 3, "calc": null}, {"cat": "Squat", "name": "Eccentric Lateral Lunge (3 sek runter)", "repGoal": "6 je Seite", "pctLabel": "BW / Tech", "cues": "3 Sek Negativphase seitlich — exzentrische Adduktoren & Quad frontal. Passend zur Eccentric-Phase. Kontrast danach: seitlicher Bound!", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Lateral Bound reaktiv → sofort danach", "repGoal": "5 je Seite", "pctLabel": "BW / Tech", "cues": "KONTRAST nach Eccentric Lateral Lunge — neurale Potenzierung frontal nutzen. Minimale Bodenkontaktzeit seitlich", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Broad Jump Max Effort", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Maximaler Abstand — explosive Hüftextension am Absprung", "sets": 5, "calc": null}]}, {"name": "TAG 3 – Explosiv Oberkörper + Block Jump VB", "exercises": [{"cat": "Upper", "name": "Push Press Cluster 3×(2+2)", "repGoal": "2+2", "pctLabel": "82%", "cues": "Explosive Schulter-Kraft für Block/Smash — Cluster für Qualität", "sets": 3, "calc": {"lift": "push_press", "pct": 0.82}}, {"cat": "Upper", "name": "Med Ball Overhead Throw", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "4–5 kg Ball, maximale Wurfexplosivität — Schulter-Chain", "sets": 5, "calc": null}, {"cat": "Upper", "name": "Explosive Pull-Up", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "So schnell wie möglich hochziehen — Kontraktionsgeschwindigkeit", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Weighted Jump Squat @30%", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Höchste Power-Output-Zone — maximale Watt", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Block Jump (Volleyball)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Vom Stand, Arm-Schwung Block — messen! Spielspezifisch", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Hurdle Jump reaktiv", "repGoal": "6", "pctLabel": "BW / Tech", "cues": "Mehrere Hürden, minimale Bodenkontaktzeit — maximale Reaktivkraft", "sets": 4, "calc": null}, {"cat": "Core", "name": "Plank Variations", "repGoal": "30–45 sek", "pctLabel": "BW / Tech", "cues": "Core-Stiffness für Kraftübertrag Boden → Schulter", "sets": 3, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}, {"code": "M5", "title": "MESOZYKLUS 5  |  Reactive Power & Peaking  |  W17–W20", "subtitle": "Plyometrie spezifisch, Sprung-Spezifik pur. Heavy Singles 90–97%. Bodenkontakt < 0.2 sek. Maximal intent bei jedem Sprung. CNS-Management. Volleyball-Approach und Block-Jump als Primärfokus.", "weeks": "W17–W20", "days": [{"name": "TAG 1 – Squat Peak + Max Reactive Power", "exercises": [{"cat": "Squat", "name": "Back Squat — W1:3RM, W2:2RM, W3:1RM (PR!)", "repGoal": "3/2/1", "pctLabel": "93%", "cues": "Peaking! Rest 4–5 Min. PR-Versuch in Woche 3. W4=Deload 3×3@75%", "sets": 3, "calc": {"lift": "back_squat", "pct": 0.93}}, {"cat": "Squat", "name": "Back Squat Backoff", "repGoal": "3", "pctLabel": "80%", "cues": "Qualitätsarbeit nach Peak-Sets, vollständige Erholung", "sets": 2, "calc": {"lift": "back_squat", "pct": 0.8}}, {"cat": "Wade", "name": "Reactive Single Leg Calf Raise (explosiv)", "repGoal": "10 je Seite", "pctLabel": "BW / Tech", "cues": "So schnell wie möglich hochdrücken — maximale Reaktivkraft im Fußgelenk. Peak-Phase!", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Jump Squat (sehr leicht)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "@20–25% — Peak Power bei leichtem Gewicht. Maximale Explosivität", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Reactive Box Jump (max Höhe!)", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Maximale Boxhöhe — persönlicher Rekord? Video aufnehmen!", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Approach Jump (messen + video)", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Sprunghöhe messen, Video aufnehmen — vergleiche mit Baseline!", "sets": 5, "calc": null}, {"cat": "Hinge", "name": "GHR / Nordic Curl", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Injury Prevention — NICHT überspringen! Hamstring Schutz", "sets": 2, "calc": null}]}, {"name": "TAG 2 – Power Clean Peak + Hip Power Max", "exercises": [{"cat": "Olympic", "name": "Power Clean Peak — W1:2RM, W2:1RM", "repGoal": "2/1", "pctLabel": "90%", "cues": "Max Clean — Triple Extension perfekt! 4–5 Min Rest. Videoanalyse", "sets": 3, "calc": {"lift": "power_clean", "pct": 0.9}}, {"cat": "Olympic", "name": "Hang Clean", "repGoal": "2", "pctLabel": "80%", "cues": "Reaktive Version — schnell und präzise", "sets": 3, "calc": {"lift": "hang_clean", "pct": 0.8}}, {"cat": "Hinge", "name": "Deadlift Heavy Single", "repGoal": "1–2", "pctLabel": "93%", "cues": "Heavy Pull — maximale Hamstring/Rücken-Kraft ausdrücken", "sets": 2, "calc": {"lift": "deadlift", "pct": 0.93}}, {"cat": "Hinge", "name": "Hip Thrust Max", "repGoal": "3", "pctLabel": "85%", "cues": "Maximal schwer — Glute Peak, 1 sek Squeeze oben", "sets": 3, "calc": {"lift": "hip_thrust", "pct": 0.85}}, {"cat": "Plyos", "name": "Depth Jump (max effort)", "repGoal": "4", "pctLabel": "BW / Tech", "cues": "Maximal reaktiv — SSC Peak. Kürzester Bodenkontakt möglich", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Vertical Jump Test (messen!)", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Messung! Bester Wert notieren. Mit Anlauf. Vergleich zu Meso 1–4", "sets": 5, "calc": null}]}, {"name": "TAG 3 – CNS-Erholung + Volleyball Transfer", "exercises": [{"cat": "Upper", "name": "Push Press (leicht, explosiv)", "repGoal": "4", "pctLabel": "65%", "cues": "Schnell! Kein Grinding — reine Explosivität. CNS-schonend", "sets": 4, "calc": {"lift": "push_press", "pct": 0.65}}, {"cat": "Upper", "name": "Pull-Up (BW, explosiv)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "So schnell wie möglich hochziehen, CNS fresh", "sets": 4, "calc": null}, {"cat": "Upper", "name": "Med Ball Slam", "repGoal": "8", "pctLabel": "BW / Tech", "cues": "6–8 kg Ball — Ganzkörperexplosivität, Entspannung danach", "sets": 4, "calc": null}, {"cat": "Squat", "name": "Lateral Lunge Aktivierung (leicht)", "repGoal": "5 je Seite", "pctLabel": "BW / Tech", "cues": "Frontales Aktivierungsmuster vor VB-Sprüngen — kein Kraftfokus! Gelenke und Adduktoren aktivieren für Blockbewegung", "sets": 2, "calc": null}, {"cat": "Plyos", "name": "Approach Jump VB (BESTER SPRUNG)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Bester Sprung — Video + Messung! Vergleich Baseline", "sets": 6, "calc": null}, {"cat": "Plyos", "name": "Block Jump VB", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Reaktiver Block-Sprung, Arm-Timing Block-Technik", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Sprint 10 m", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "Reaktivkraft + Schnelligkeit — CNS scharf halten", "sets": 5, "calc": null}, {"cat": "Recovery", "name": "Mobility / Foam Roll", "repGoal": "15 Min", "pctLabel": "BW / Tech", "cues": "Recovery für das Peaking — NICHT auslassen. Quad, Hamstring, Glute", "sets": 1, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}, {"code": "M6", "title": "MESOZYKLUS 6  |  Transfer & Deload — Kraft auf Spielfeld  |  W21–W24", "subtitle": "Volleyball-spezifischer Transfer. Volumen −30–40%. Intensität erhalten. Approach Jump und Block Jump als Primärfokus. Frisch in den Wettkampf.", "weeks": "W21–W24", "days": [{"name": "TAG 1 – Maintenance Squat + Volleyball Transfer", "exercises": [{"cat": "Squat", "name": "Back Squat (Maintenance)", "repGoal": "3", "pctLabel": "80%", "cues": "Schwer genug um Kraft zu erhalten — kein Volumen-Training mehr", "sets": 3, "calc": {"lift": "back_squat", "pct": 0.8}}, {"cat": "Squat", "name": "Front Squat", "repGoal": "4", "pctLabel": "70%", "cues": "Leichter — Technik-Fokus, frisch bleiben", "sets": 2, "calc": {"lift": "front_squat", "pct": 0.7}}, {"cat": "Hinge", "name": "Hip Thrust", "repGoal": "6", "pctLabel": "75%", "cues": "Glute Power erhalten — volle Hüftextension", "sets": 3, "calc": {"lift": "hip_thrust", "pct": 0.75}}, {"cat": "Wade", "name": "Calf Raise leicht (Maintenance)", "repGoal": "15 je Seite", "pctLabel": "BW / Tech", "cues": "Kraft erhalten, kein Volumen. Frisch in den Wettkampf — Fußgelenk aktiv halten", "sets": 2, "calc": null}, {"cat": "Plyos", "name": "Approach Jump VB (max!)", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "PRIMÄRER FOKUS! Feld-Transfer. Jeder Sprung mit maximalem Intent", "sets": 6, "calc": null}, {"cat": "Plyos", "name": "Block Jump reaktiv VB", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Spielsituation imitieren — Timing und Reaktion", "sets": 5, "calc": null}, {"cat": "Squat", "name": "Lateral Lunge (leicht, Aktivierung)", "repGoal": "6 je Seite", "pctLabel": "BW / Tech", "cues": "Frontales Muster erhalten — leicht, kein Kraftfokus. Körper frisch halten für Wettkampf-Blockbewegungen", "sets": 2, "calc": null}, {"cat": "Plyos", "name": "Reactive Bound", "repGoal": "5 je", "pctLabel": "BW / Tech", "cues": "Laterale Explosivität — Volleyball-Auslage und Abwehr", "sets": 4, "calc": null}, {"cat": "Plyos", "name": "Sprint + Reaktion", "repGoal": "10 m", "pctLabel": "BW / Tech", "cues": "Mit akustischem Signal — Spielnahes Training", "sets": 4, "calc": null}]}, {"name": "TAG 2 – Hang Clean leicht + Deload Hinge", "exercises": [{"cat": "Olympic", "name": "Hang Clean (leicht)", "repGoal": "3", "pctLabel": "70%", "cues": "Technik + Explosivität — NICHT grinden. Power erhalten", "sets": 4, "calc": {"lift": "hang_clean", "pct": 0.7}}, {"cat": "Hinge", "name": "Deadlift (leicht, Maintenance)", "repGoal": "3", "pctLabel": "75%", "cues": "Maintenance — kein Grinding, frisch und sauber bleiben", "sets": 2, "calc": {"lift": "deadlift", "pct": 0.75}}, {"cat": "Hinge", "name": "RDL (leicht)", "repGoal": "8", "pctLabel": "55%", "cues": "Leichter — Bewegungserhalt, Hamstring aktiv halten", "sets": 3, "calc": {"lift": "rdl", "pct": 0.55}}, {"cat": "Hinge", "name": "GHR / Nordic Curl", "repGoal": "6", "pctLabel": "BW / Tech", "cues": "Hamstring Injury Prevention — NIEMALS auslassen im Transfer", "sets": 3, "calc": null}, {"cat": "Hinge", "name": "Sled Push (leicht)", "repGoal": "20 m", "pctLabel": "BW / Tech", "cues": "Aktivierung ohne Erschöpfung — leicht, schnell", "sets": 3, "calc": null}, {"cat": "Plyos", "name": "Approach Jump VB", "repGoal": "5", "pctLabel": "BW / Tech", "cues": "Technik + Timing — Transfer auf Spielfeld", "sets": 5, "calc": null}, {"cat": "Plyos", "name": "Vertical Jump FINALE (messen!)", "repGoal": "3", "pctLabel": "BW / Tech", "cues": "FINALE MESSUNG — Vergleich zur Baseline! Fortschritt dokumentieren", "sets": 3, "calc": null}]}, {"name": "TAG 3 – Oberkörper leicht + Mobilität & Recovery", "exercises": [{"cat": "Upper", "name": "Push Press (leicht)", "repGoal": "5", "pctLabel": "60%", "cues": "Schulter gesund halten — leicht und schnell", "sets": 3, "calc": {"lift": "push_press", "pct": 0.6}}, {"cat": "Upper", "name": "Pull-Up / Lat Pulldown", "repGoal": "8", "pctLabel": "BW / Tech", "cues": "Rücken Maintenance — leicht, volle ROM", "sets": 3, "calc": null}, {"cat": "Upper", "name": "Band Pull-Apart", "repGoal": "20", "pctLabel": "BW / Tech", "cues": "Rotatorenmanschette + Schulterblatt — Schultergesundheit!", "sets": 3, "calc": null}, {"cat": "Upper", "name": "Face Pull", "repGoal": "15", "pctLabel": "BW / Tech", "cues": "Schultergesundheit — immer! 6 Monate haben Schultern belastet", "sets": 3, "calc": null}, {"cat": "Core", "name": "Core Circuit (10 Min)", "repGoal": "10 Min", "pctLabel": "BW / Tech", "cues": "Plank, Dead Bug, Pallof Press — Core Maintenance", "sets": 1, "calc": null}, {"cat": "Recovery", "name": "Foam Rolling (15 Min)", "repGoal": "15 Min", "pctLabel": "BW / Tech", "cues": "Quad, Hamstring, Glute, Rücken — gründlich", "sets": 1, "calc": null}, {"cat": "Recovery", "name": "Mobility Flow", "repGoal": "15 Min", "pctLabel": "BW / Tech", "cues": "Hip, Ankle, T-Spine — Beweglichkeit für nächste Saison erhalten", "sets": 1, "calc": null}]}], "deload": "⚠️  WOCHE 4 = DELOAD-WOCHE:  Volumen −40%  |  Intensität −10–15%  |  Regeneration priorisieren"}], "jump": {"intro": "Messe immer unter gleichen Bedingungen: nach Aufwärmen, gleiche Schuhe, gleiche Tageszeit. Notiere Datum und Bedingungen in der letzten Spalte.", "headers": ["#", "Zeitpunkt", "Meso", "Datum", "Stand-Sprung\n(Squat Jump) cm", "Anlauf-Sprung\n(Approach) cm", "Block-Sprung\n(vom Stand) cm", "Verbesserung\nvs. Baseline", "Bestes Ergebnis\naller Messungen", "Notizen / Bedingungen"], "rows": [{"label": "Baseline (W0)", "meso": "—"}, {"label": "Ende Meso 1 (W4)", "meso": "1"}, {"label": "Ende Meso 2 (W8)", "meso": "2"}, {"label": "Ende Meso 3 (W12)", "meso": "3"}, {"label": "Ende Meso 4 (W16)", "meso": "4"}, {"label": "Ende Meso 5 (W20)", "meso": "5"}, {"label": "Ende Meso 6 — FINALE (W24)", "meso": "6"}]}, "principles": [{"title": "1. Trust the Process", "body": "Kein Abweichen vom Plan. 6 Monate konsequent. Vertraue der Progression — nicht jedem Training ansehen, ob es funktioniert."}, {"title": "2. Strength is the Foundation", "body": "Je stärker du bist, desto höher springst du. Priorisiere Squat und Deadlift als primäre Messgrößen."}, {"title": "3. Movement Quality First", "body": "Bevor du das Gewicht erhöhst: saubere Technik. Kein Ego-Lifting. Verletzungen kosten Monate."}, {"title": "4. Progressive Overload", "body": "Jede Woche eine kleine Steigerung: +2,5 kg, +1 Satz, −5 sek Pause. Der Körper adaptiert nur an neue Stimuli."}, {"title": "5. Variety", "body": "Breite Bewegungsbasis in Meso 1–2. Spezifität steigt mit dem Makrozyklus. General → Specific."}, {"title": "6. Individuality", "body": "Prozentzahlen an deine echten 1RM-Werte anpassen. Der Plan ist ein Rahmen — du bist der Athlet."}, {"title": "7. Recovery", "body": "Schlaf, Ernährung und Deload sind Teil des Plans. Wachstum passiert in der Erholung, nicht im Training."}, {"title": "8. Anti Blowup", "body": "Keine 2 intensiven Sessions hintereinander. Bei Technik-Versagen: Gewicht runter. Deload Woche 4 = Pflicht."}, {"title": "9. Clean Pulls & Olympic Lifting", "body": "John Evans Kernprinzip: Clean Pulls, Panda Pulls, Hang Cleans sind die direktesten Sprungkraft-Builder. @105% supramaximal in Meso 3."}, {"title": "10. Plyometrie Progression", "body": "Meso 1: sub-maximal. Meso 2–3: reaktiv. Meso 4: Kontrast. Meso 5–6: maximal spezifisch. Immer frisch, nie auf müden Beinen."}], "antiBlowup_title": "Anti Blowup Protocol"};
+
+/* ---------- icons ---------- */
+const IC = {
+  home:'<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-6h5v6"/></svg>',
+  train:'<svg viewBox="0 0 24 24"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></svg>',
+  rm:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 12 16 8"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>',
+  jump:'<svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M16 7h4v4"/></svg>',
+  guide:'<svg viewBox="0 0 24 24"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 17h13"/><path d="M9 8h6M9 11h6"/></svg>',
+  back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  edit:'<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/></svg>'
+};
+const MESO_COLORS=['var(--m1)','var(--m2)','var(--m3)','var(--m4)','var(--m5)','var(--m6)'];
+const MESO_HEX=['#34d399','#22d3ee','#60a5fa','#a78bfa','#fb923c','#fb5e7a'];
+const CAT_COLOR={'Squat':'#60a5fa','Squat ★opt':'#60a5fa','Hinge':'#a78bfa','Olympic':'#fb923c',
+  'Plyos':'#34d399','Wade':'#fbbf24','Upper':'#f472b6','Core':'#94a3b8','Recovery':'#2dd4bf'};
+const WEEK_LABELS=[{n:'W1',s:'Start'},{n:'W2',s:'Build'},{n:'W3',s:'Peak'},{n:'W4',s:'Deload'}];
+
+/* ---------- state + storage ---------- */
+let S = { view:'home', mesoIdx:null, dayIdx:0, week:0 };
+let DB = { onerm:{}, training:{done:{},log:{}}, jump:[], settings:{} };
+DATA.tracker.lifts.forEach(l=>DB.onerm[l.key]=l.default);
+DB.jump = DATA.jump.rows.map(()=>({date:'',squat:'',approach:'',block:'',notes:''}));
+
+// localStorage-basierter Speicher (funktioniert lokal im Browser, Daten bleiben nach Schließen erhalten)
+async function loadKey(k,fb){ try{ const v=localStorage.getItem(k); return v!=null?JSON.parse(v):fb; }catch(e){ return fb; } }
+const savers={};
+function saveKey(k,v){ clearTimeout(savers[k]); savers[k]=setTimeout(()=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },280); }
+
+async function boot(){
+  DB.onerm    = await loadKey('vb_onerm', DB.onerm);
+  DB.training = await loadKey('vb_training', DB.training);
+  DB.jump     = await loadKey('vb_jump', DB.jump);
+  DB.settings = await loadKey('vb_settings', DB.settings);
+  if(!DB.training.done) DB.training.done={}; if(!DB.training.log) DB.training.log={};
+  buildTabs(); render();
+}
+
+/* ---------- helpers ---------- */
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function emph(s){ return esc(s).replace(/(OPTIONAL|Kontrast|Deload|DELOAD|frisch|Technik ist König|niemals|IMMER|Pflicht|PR!|supramaximal|105%)/g,'<b>$1</b>'); }
+const round0=x=>Math.round(x);
+function targetKg(calc){ if(!calc) return null; const m=DB.onerm[calc.lift]; if(!m) return null; return round0(m*calc.pct); }
+function currentProgram(){
+  const sd=DB.settings.startDate; if(!sd) return null;
+  const start=new Date(sd+'T00:00:00'); if(isNaN(start)) return null;
+  const days=Math.floor((Date.now()-start)/864e5); if(days<0) return {wk:0,meso:0,wkIn:0,pre:true};
+  const wk=Math.min(days/7|0,23); return {wk, meso:(wk/4|0), wkIn:wk%4, days};
+}
+
+/* ---------- tabs ---------- */
+function buildTabs(){
+  const items=[['home','Übersicht',IC.home],['training','Training',IC.train],['onerm','1RM',IC.rm],['jump','Sprung',IC.jump],['guide','Guide',IC.guide]];
+  document.getElementById('tabbar').innerHTML=items.map(([v,l,ic])=>
+    `<button class="tab ${S.view===v?'active':''}" data-nav="${v}">${ic}<span>${l}</span></button>`).join('');
+}
+function updateWkBadge(){
+  const cp=currentProgram(); const b=document.getElementById('wkBadge');
+  if(cp && !cp.pre){ b.innerHTML=`<b>W${cp.wk+1}</b><span>von 24</span>`; }
+  else { b.innerHTML=`<b>24</b><span>Wochen</span>`; }
+}
+
+/* ---------- render dispatch ---------- */
+function render(){
+  buildTabs(); updateWkBadge();
+  const v=S.view; let html='';
+  if(v==='home') html=viewHome();
+  else if(v==='training') html = S.mesoIdx==null ? viewMesoList() : viewMesoDetail();
+  else if(v==='onerm') html=viewOneRM();
+  else if(v==='jump') html=viewJump();
+  else if(v==='guide') html=viewGuide();
+  const m=document.getElementById('screen');
+  m.innerHTML=html; m.scrollTop=0; window.scrollTo(0,0);
+  if(v==='jump') drawChart();
+}
+
+/* ---------- HOME ---------- */
+function viewHome(){
+  const cp=currentProgram();
+  const bs=DB.onerm.back_squat||0, dl=DB.onerm.deadlift||0;
+  let doneCount=0; Object.values(DB.training.done).forEach(x=>{if(x)doneCount++;});
+  let bestJump=0; DB.jump.forEach(r=>{const v=parseFloat(r.squat); if(v>bestJump)bestJump=v;});
+
+  // timeline
+  const segs=DATA.mesos.map((m,i)=>`<div class="seg ${cp&&!cp.pre&&cp.meso===i?'on':''}" style="background:${MESO_COLORS[i]};color:${MESO_COLORS[i]}"></div>`).join('');
+  const segLbls=DATA.mesos.map((m,i)=>`<span>M${i+1}</span>`).join('');
+
+  // current block
+  let blockHTML;
+  if(cp && !cp.pre){
+    const m=DATA.mesos[cp.meso];
+    blockHTML=`<div class="card block-card stagger-item">
+      <span class="tag" style="background:${MESO_COLORS[cp.meso]}">${m.code} · ${WEEK_LABELS[cp.wkIn].n}</span>
+      <h3>${esc(m.title.split('|')[1].trim())}</h3>
+      <div class="ph">${esc(m.weeks)} · ${WEEK_LABELS[cp.wkIn].s}-Woche · 3 Trainingstage</div>
+      <div style="margin-top:13px"><button class="btn" data-openmeso="${cp.meso}" data-week="${cp.wkIn}">Heutiges Training öffnen</button></div>
+    </div>`;
+  } else if(cp && cp.pre){
+    blockHTML=`<div class="card block-card"><h3>Startdatum liegt in der Zukunft</h3>
+      <div class="ph">Das Programm beginnt am ${esc(DB.settings.startDate)}. Plan ist bereit.</div>
+      <div style="margin-top:13px"><button class="btn ghost" data-nav="training">Plan ansehen</button></div></div>`;
+  } else {
+    blockHTML=`<div class="card block-card">
+      <h3>Programm starten</h3>
+      <div class="ph" style="margin-bottom:11px">Trage dein Startdatum ein — die App zeigt dir dann automatisch deine aktuelle Woche und deinen Block.</div>
+      <input type="date" data-startdate value="${esc(DB.settings.startDate||'')}">
+      <div style="margin-top:11px"><button class="btn" data-nav="training">Direkt zum Plan</button></div>
+    </div>`;
+  }
+
+  const backupBar = `<div class="backup-bar">
+    <button onclick="exportBackup()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Backup</button>
+    <button class="imp" onclick="importBackup()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Wiederherstellen</button>
+  </div>`;
+
+  return `
+  <div class="hero stagger-item">
+    <div class="court">🏐</div>
+    <h2>Volleyball<br>Sprungkraft</h2>
+    <div class="sub">Makrozyklus · 6 Mesozyklen</div>
+    <div class="meta">
+      <div><div class="v">24</div><div class="k">Wochen</div></div>
+      <div><div class="v">6</div><div class="k">Blöcke</div></div>
+      <div><div class="v">140</div><div class="k">Übungen</div></div>
+    </div>
+    <div class="timeline">${segs}</div>
+    <div class="tl-labels">${segLbls}</div>
+  </div>
+
+  ${blockHTML}
+  ${backupBar}
+
+  <div class="statgrid stagger">
+    <div class="card stat"><div class="v accent">${bs?bs:'–'}<small> kg</small></div><div class="k">Back Squat 1RM</div></div>
+    <div class="card stat"><div class="v">${doneCount}</div><div class="k">Sätze erledigt</div></div>
+    <div class="card stat"><div class="v">${bestJump?bestJump:'–'}<small> cm</small></div><div class="k">Bester Sprung</div></div>
+  </div>
+
+  <div class="section-eyebrow">Trainings-Prinzip</div>
+  <div class="card block-card" style="border-left:4px solid var(--accent)">
+    <div class="ph" style="color:var(--text);font-size:13px;line-height:1.55">${esc(DATA.principles[0].body)}</div>
+  </div>
+
+  <div class="foot">${esc(DATA.meta.principlesLine)}</div>`;
+}
+
+/* ---------- MESO LIST ---------- */
+function viewMesoList(){
+  const cp=currentProgram();
+  const cards=DATA.mesos.map((m,i)=>{
+    const ex=m.days.reduce((a,d)=>a+d.exercises.length,0);
+    const ov=DATA.overview.rows[i];
+    const focus=ov[3], plyo=ov[11], intens=ov[7], method=ov[4].split(/\s+\/\s+/)[0].trim();
+    const active=cp&&!cp.pre&&cp.meso===i;
+    return `<button class="meso-card" data-openmeso="${i}" style="${active?'border-color:'+MESO_COLORS[i]:''}">
+      <div class="bar" style="background:${MESO_COLORS[i]}"></div>
+      <div class="body">
+        <div class="meso-badge" style="background:${MESO_COLORS[i]}">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <h3>${esc(focus)}</h3>
+          <div class="wk">${esc(m.weeks)} ${active?'· läuft jetzt':''}</div>
+          <div class="desc">${esc(ov[13])}</div>
+          <div class="chiprow"><span class="chip">${esc(method)}</span><span class="chip">${ex} Übungen</span><span class="chip">Plyo: ${esc(plyo.split(',')[0])}</span></div>
+        </div>
+        <div class="intens"><div class="v">${esc(intens)}</div><div class="k">%1RM</div></div>
+      </div>
+    </button>`;
+  }).join('');
+  return `<div class="section-eyebrow">Wähle deinen Block</div><div class="stagger">${cards}</div>
+    <div class="foot">Progressive Overload über 24 Wochen<br>General → Specific · Intensität steigt pro Block</div>`;
+}
+
+/* ---------- MESO DETAIL ---------- */
+function viewMesoDetail(){
+  const i=S.mesoIdx, m=DATA.mesos[i], col=MESO_COLORS[i], hex=MESO_HEX[i];
+  const day=m.days[S.dayIdx];
+  // progress for this day+week
+  let total=0,done=0;
+  day.exercises.forEach((ex,xi)=>{ for(let s=0;s<ex.sets;s++){ total++; if(DB.training.done[key(i,S.dayIdx,S.week,xi,s)])done++; } });
+  const pct = total? Math.round(done/total*100):0;
+
+  const dayTabs=m.days.map((d,di)=>`<button class="${di===S.dayIdx?'on':''}" data-day="${di}" style="${di===S.dayIdx?'background:'+col:''}">Tag ${di+1}</button>`).join('');
+  const weekTabs=WEEK_LABELS.map((w,wi)=>`<button class="${wi===S.week?'on':''}" data-week="${wi}" style="${wi===S.week?'background:'+col:''}">${w.n}<small>${w.s}</small></button>`).join('');
+
+  const exHTML=day.exercises.map((ex,xi)=>exerciseCard(ex,xi,i,col)).join('');
+  const deload = (S.week===3 && m.deload) ? `<div class="deload-note"><span>⚠️</span><span>${esc(m.deload)}</span></div>` : '';
+  const keyNote=m.subtitle;
+
+  return `
+  <button class="back" data-back>${IC.back} Alle Blöcke</button>
+  <div class="detail-head" style="background:radial-gradient(360px 180px at 92% -20%, ${hex}33, transparent 60%), linear-gradient(160deg,#191c25,#121319); border-color:${hex}55">
+    <div class="code" style="color:${col}">${m.code}</div>
+    <h2>${esc(m.title.split('|')[1].trim())}</h2>
+    <div class="wk">${esc(m.weeks)} · ${esc(DATA.overview.rows[i][12])}</div>
+    <div class="keynote">${emph(keyNote)}</div>
+  </div>
+
+  <div class="weekctl">${weekTabs}</div>
+  <div class="segctl">${dayTabs}</div>
+
+  <div class="prog">
+    <div class="track"><div class="fill" id="progfill" style="width:${pct}%;background:${col}"></div></div>
+    <div class="lbl" id="proglbl" style="color:${col}">${pct}%</div>
+  </div>
+
+  <div class="daytitle">${esc(day.name)}</div>
+  ${exHTML}
+  ${deload}
+  <div class="foot" id="dayfoot">${done}/${total} Sätze in dieser Woche erledigt</div>`;
+}
+
+function exerciseCard(ex,xi,mi,col){
+  const cat=CAT_COLOR[ex.cat]||'#888';
+  const isContrast=/^→/.test(ex.name);
+  const kg=targetKg(ex.calc);
+  const tgKg = ex.calc
+    ? `<div class="tg kg"><div class="k">Ziel kg</div><div class="v">${kg!=null?kg:'–'}<small> kg</small></div></div>`
+    : (ex.pctLabel && ex.pctLabel!=='BW / Tech' && ex.pctLabel!=='—'
+        ? `<div class="tg"><div class="k">%1RM</div><div class="v" style="font-size:14px">${esc(ex.pctLabel)}</div></div>`
+        : `<div class="tg"><div class="k">Last</div><div class="v" style="font-size:13px;color:var(--muted)">${ex.pctLabel==='BW / Tech'?'BW':'Technik'}</div></div>`);
+  const pctTag = ex.calc ? `<div class="tg"><div class="k">%1RM</div><div class="v" style="font-size:14px">${esc(ex.pctLabel)}</div></div>` : '';
+
+  let setItems='';
+  for(let s=0;s<ex.sets;s++){
+    const on=DB.training.done[key(mi,S.dayIdx,S.week,xi,s)];
+    const lgS=DB.training.log[key(mi,S.dayIdx,S.week,xi,s)]||{};
+    const hasLog=lgS.kg||lgS.reps||lgS.rpe;
+    const logSummary=hasLog?`<span style="font-size:9px;color:var(--muted);margin-left:4px">${lgS.kg?lgS.kg+'kg':''}${lgS.reps?' · '+lgS.reps+'×':''}${lgS.rpe?' RPE'+lgS.rpe:''}</span>`:'';
+    setItems+=`<div class="set-item">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <button class="setbox ${on?'done':''}" data-set="${xi}:${s}" data-setlog="${xi}:${s}" style="${on?'background:'+col:''}">${s+1}</button>
+        ${logSummary}
+      </div>
+      <div class="set-log-panel" id="slp-${xi}-${s}">
+        <div class="slp-header">Satz ${s+1} — Log</div>
+        <div class="slp-grid">
+          <div><label>kg</label><input type="number" inputmode="decimal" data-li="${xi}:${s}:kg" value="${esc(lgS.kg||'')}" placeholder="${kg!=null?kg:'–'}"></div>
+          <div><label>Wdh</label><input type="number" inputmode="numeric" data-li="${xi}:${s}:reps" value="${esc(lgS.reps||'')}" placeholder="${esc(ex.repGoal)}"></div>
+          <div><label>RPE</label><input type="number" inputmode="decimal" data-li="${xi}:${s}:rpe" value="${esc(lgS.rpe||'')}" placeholder="–"></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `<div class="ex ${isContrast?'contrast':''}" style="--cat:${cat}">
+    <div class="top">
+      <h4>${esc(ex.name)}</h4>
+      <span class="cat-pill">${esc(ex.cat.replace('★opt',''))}</span>
+    </div>
+    <div class="targets">
+      <div class="tg"><div class="k">Sätze</div><div class="v">${ex.sets}</div></div>
+      <div class="tg"><div class="k">Wdh</div><div class="v" style="font-size:14px">${esc(ex.repGoal)}</div></div>
+      ${pctTag}
+      ${tgKg}
+    </div>
+    <div class="cues">${emph(ex.cues)}</div>
+    <div class="sets" style="flex-direction:column;align-items:stretch;gap:4px">
+      ${setItems}
+    </div>
+  </div>`;
+}
+const key=(...a)=>a.join(':');
+
+/* ---------- 1RM ---------- */
+function viewOneRM(){
+  const rows=DATA.tracker.lifts.map(l=>{
+    const v=DB.onerm[l.key]||0;
+    const pcs=DATA.tracker.percents.map(p=>{
+      const hot=Math.abs(p.value-0.85)<0.001;
+      return `<div class="pc ${hot?'hot':''}"><div class="p">${p.label}</div><div class="w">${v?round0(v*p.value):'–'}</div></div>`;
+    }).join('');
+    return `<div class="card rm-row">
+      <div class="head">
+        <div class="nm">${esc(l.name)}</div>
+        <div class="inp"><input type="number" inputmode="decimal" data-rm="${l.key}" value="${v||''}"><span>kg</span></div>
+      </div>
+      <div class="pcts">${pcs}</div>
+    </div>`;
+  }).join('');
+  return `<div class="section-eyebrow">1RM Rechner</div>
+    <div class="card rm-intro"><p>Trage dein aktuelles 1RM (Maximalgewicht) pro Übung ein. Alle Trainingsgewichte im Plan berechnen sich daraus automatisch.</p></div>
+    <div class="stagger">${rows}</div>
+    <div class="tip"><span>💡</span><span>${esc(DATA.tracker.tip)}</span></div>
+    <div class="foot"><button class="reset-link" data-reset="onerm">Alle 1RM auf 100 kg zurücksetzen</button></div>`;
+}
+
+/* ---------- JUMP ---------- */
+function viewJump(){
+  const base=parseFloat(DB.jump[0]&&DB.jump[0].squat)||null;
+  let bestSoFar=-Infinity;
+  const rows=DATA.jump.rows.map((meta,i)=>{
+    const r=DB.jump[i]||{};
+    const sq=parseFloat(r.squat);
+    if(!isNaN(sq)&&sq>bestSoFar)bestSoFar=sq;
+    let imp='–',impCls='';
+    if(i>0 && base!=null && !isNaN(sq)){ const d=sq-base; imp=(d>0?'+':'')+d; impCls=d>0?'up':(d<0?'dn':''); }
+    const best = bestSoFar>-Infinity?bestSoFar:'–';
+    const mcol = meta.meso==='—' ? 'var(--faint)' : MESO_COLORS[(parseInt(meta.meso)||1)-1];
+    const showDelta = i>0;
+    return `<div class="card jump-row">
+      <div class="rh"><div class="lab">${esc(meta.label)}</div>
+        <div class="ms" style="background:${mcol}">${meta.meso==='—'?'Basis':'Meso '+meta.meso}</div></div>
+      <div class="jgrid dates"><div class="jfield"><label>Datum</label><input type="date" data-j="${i}:date" value="${esc(r.date||'')}"></div></div>
+      <div class="jgrid">
+        <div class="jfield"><label>Stand cm</label><input type="number" inputmode="decimal" data-j="${i}:squat" value="${esc(r.squat||'')}"></div>
+        <div class="jfield"><label>Anlauf cm</label><input type="number" inputmode="decimal" data-j="${i}:approach" value="${esc(r.approach||'')}"></div>
+        <div class="jfield"><label>Block cm</label><input type="number" inputmode="decimal" data-j="${i}:block" value="${esc(r.block||'')}"></div>
+      </div>
+      ${showDelta?`<div class="jdelta">
+        <div class="d">vs. Baseline<b class="${impCls}">${imp}${imp!=='–'?' cm':''}</b></div>
+        <div class="d">Bestwert<b>${best}${best!=='–'?' cm':''}</b></div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+  return `<div class="section-eyebrow">Sprung-Tracker</div>
+    <div class="card chart-card"><canvas id="jchart" width="420" height="200" style="width:100%;height:auto;display:block"></canvas>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Stand</span><span><i style="background:#60a5fa"></i>Anlauf</span><span><i style="background:#34d399"></i>Block</span></div>
+    </div>
+    <div class="card rm-intro"><p>${esc(DATA.jump.intro)}</p></div>
+    <div class="stagger">${rows}</div>
+    <div class="foot">Verbesserung wird gegen den Stand-Sprung der Baseline berechnet</div>`;
+}
+function drawChart(){
+  const cv=document.getElementById('jchart'); if(!cv)return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height; ctx.clearRect(0,0,W,H);
+  const padL=30,padR=12,padT=14,padB=22;
+  const series=[['squat','#ff7a1a'],['approach','#60a5fa'],['block','#34d399']];
+  let vals=[]; DB.jump.forEach(r=>series.forEach(([k])=>{const v=parseFloat(r[k]); if(!isNaN(v))vals.push(v);}));
+  if(vals.length<1){ ctx.fillStyle='#6b7280';ctx.font='600 13px Manrope,sans-serif';ctx.textAlign='center';
+    ctx.fillText('Trage Sprungwerte ein, um den Verlauf zu sehen',W/2,H/2); return; }
+  let mn=Math.min(...vals),mx=Math.max(...vals); if(mn===mx){mn-=5;mx+=5;} const rng=mx-mn||1; mn=Math.floor((mn-2)); mx=Math.ceil(mx+2);
+  const n=DATA.jump.rows.length;
+  const X=i=> padL + (W-padL-padR)*(n<2?0.5:i/(n-1));
+  const Y=v=> padT + (H-padT-padB)*(1-(v-mn)/(mx-mn));
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1; ctx.fillStyle='#6b7280';ctx.font='600 9px Manrope,sans-serif';ctx.textAlign='right';
+  for(let g=0;g<=3;g++){ const val=mn+(mx-mn)*g/3; const y=Y(val); ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke(); ctx.fillText(Math.round(val),padL-5,y+3); }
+  series.forEach(([k,col])=>{
+    const pts=[]; DB.jump.forEach((r,i)=>{const v=parseFloat(r[k]); if(!isNaN(v))pts.push([i,v]);});
+    if(pts.length>=2){ ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.lineJoin='round';ctx.beginPath();
+      pts.forEach((p,j)=>{const x=X(p[0]),y=Y(p[1]); j?ctx.lineTo(x,y):ctx.moveTo(x,y);}); ctx.stroke(); }
+    pts.forEach(p=>{const x=X(p[0]),y=Y(p[1]); ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,3.6,0,7);ctx.fill();
+      ctx.fillStyle='#0c0d11';ctx.beginPath();ctx.arc(x,y,1.5,0,7);ctx.fill();});
+  });
+}
+
+/* ---------- GUIDE ---------- */
+function viewGuide(){
+  const princ=DATA.principles.map((p,i)=>{
+    const t=p.title.replace(/^\d+\.\s*/,'');
+    return `<div class="card gp"><h4><span class="num">${String(i+1).padStart(2,'0')}</span>${esc(t)}</h4><p>${esc(p.body)}</p></div>`;
+  }).join('');
+  const proto=`<div class="card proto"><h3>${esc(DATA.antiBlowup_title||'Anti Blowup Protocol')}</h3><ul style="margin:0;padding:0">${
+    DATA.antiBlowup.map(x=>`<li>${esc(x.replace(/^\d+\.\s*/,''))}</li>`).join('')}</ul></div>`;
+  const ov=DATA.overview.rows.map((r,i)=>`<div class="ov-row" style="--cat:${MESO_COLORS[i]}">
+      <div class="h"><div class="bd" style="background:${MESO_COLORS[i]}">${i+1}</div>
+        <div><div class="ttl">${esc(r[3])}</div><div class="wk" style="font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.1em;text-transform:uppercase">${esc(r[1])}</div></div></div>
+      <div class="meta">
+        <div><div class="k">Methode</div><div class="v">${esc(r[4])}</div></div>
+        <div><div class="k">Intensität</div><div class="v">${esc(r[7])} %1RM · RPE ${esc(r[10])}</div></div>
+        <div><div class="k">Plyometrie</div><div class="v">${esc(r[11])}</div></div>
+        <div><div class="k">THP</div><div class="v">${esc(r[12])}</div></div>
+      </div></div>`).join('');
+  return `<div class="section-eyebrow">Die 10 Prinzipien</div><div class="stagger">${princ}</div>
+    ${proto}
+    <div class="section-eyebrow" style="margin-top:18px">Makrozyklus-Übersicht</div>
+    <div class="ov-tbl">${ov}</div>
+    <div class="foot">John Evans / THP Strength Methodik</div>`;
+}
+
+/* ---------- events ---------- */
+document.getElementById('tabbar').addEventListener('click',e=>{
+  const b=e.target.closest('[data-nav]'); if(!b)return;
+  S.view=b.dataset.nav; if(S.view==='training'){/*keep meso selection*/} render();
+});
+document.getElementById('screen').addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]'); if(nav){S.view=nav.dataset.nav; render(); return;}
+  const om=e.target.closest('[data-openmeso]'); if(om){ S.view='training'; S.mesoIdx=+om.dataset.openmeso; S.dayIdx=0;
+    S.week = om.dataset.week!=null? +om.dataset.week : S.week; render(); return; }
+  const bk=e.target.closest('[data-back]'); if(bk){ S.mesoIdx=null; render(); return; }
+  const dy=e.target.closest('[data-day]'); if(dy){ S.dayIdx=+dy.dataset.day; render(); return; }
+  const wk=e.target.closest('[data-week]'); if(wk && wk.closest('.weekctl')){ S.week=+wk.dataset.week; render(); return; }
+  const set=e.target.closest('[data-set]'); if(set){ const [xi,s]=set.dataset.set.split(':').map(Number);
+    const k=key(S.mesoIdx,S.dayIdx,S.week,xi,s); const now=!DB.training.done[k];
+    if(now)DB.training.done[k]=true; else delete DB.training.done[k];
+    saveKey('vb_training',DB.training);
+    const col=MESO_COLORS[S.mesoIdx];
+    set.classList.toggle('done',now); set.style.background = now?col:'';
+    // toggle log panel for this set
+    const panel=document.getElementById(`slp-${xi}-${s}`);
+    if(panel){
+      const isOpen=panel.classList.contains('open');
+      // close all panels in this exercise first
+      set.closest('.sets').querySelectorAll('.set-log-panel').forEach(p=>p.classList.remove('open'));
+      set.closest('.sets').querySelectorAll('.setbox').forEach(b=>b.classList.remove('active-log'));
+      if(!isOpen){ panel.classList.add('open'); set.classList.add('active-log');
+        setTimeout(()=>{ const inp=panel.querySelector('input'); if(inp)inp.focus(); },50); }
+    }
+    updateDayProgress(col); return; }
+  const lg=e.target.closest('[data-log]'); if(lg){ const el=document.getElementById('lb-'+lg.dataset.log); if(el)el.classList.toggle('open'); return; }
+  const rs=e.target.closest('[data-reset]'); if(rs){ DATA.tracker.lifts.forEach(l=>DB.onerm[l.key]=100); saveKey('vb_onerm',DB.onerm); render(); return; }
+});
+document.getElementById('screen').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.rm){ DB.onerm[t.dataset.rm]=parseFloat(t.value)||0; saveKey('vb_onerm',DB.onerm);
+    // live update just this row's pcts
+    const row=t.closest('.rm-row'); const v=DB.onerm[t.dataset.rm];
+    row.querySelectorAll('.pc').forEach((pc,idx)=>{ const p=DATA.tracker.percents[idx].value; pc.querySelector('.w').textContent=v?round0(v*p):'–';});
+    return;
+  }
+  if(t.dataset.startdate!==undefined){ DB.settings.startDate=t.value; saveKey('vb_settings',DB.settings); updateWkBadge(); return; }
+  if(t.dataset.j){ const [i,f]=t.dataset.j.split(':'); DB.jump[i]=DB.jump[i]||{}; DB.jump[i][f]=t.value; saveKey('vb_jump',DB.jump);
+    if(f!=='date'&&f!=='notes'){ // recompute deltas + chart without full rerender focus loss
+      drawChart(); refreshJumpDeltas(); }
+    return; }
+  if(t.dataset.li){ const [xi,si,f]=t.dataset.li.split(':'); const k=key(S.mesoIdx,S.dayIdx,S.week,xi,si);
+    DB.training.log[k]=DB.training.log[k]||{}; DB.training.log[k][f]=t.value; saveKey('vb_training',DB.training); return; }
+});
+document.getElementById('screen').addEventListener('change',e=>{
+  if(e.target.dataset.startdate!==undefined){ render(); } // refresh home block after date chosen
+});
+function updateDayProgress(col){
+  if(S.mesoIdx==null)return; const day=DATA.mesos[S.mesoIdx].days[S.dayIdx];
+  let total=0,done=0;
+  day.exercises.forEach((ex,xi)=>{ for(let s=0;s<ex.sets;s++){ total++; if(DB.training.done[key(S.mesoIdx,S.dayIdx,S.week,xi,s)])done++; } });
+  const pct=total?Math.round(done/total*100):0;
+  const f=document.getElementById('progfill'); if(f)f.style.width=pct+'%';
+  const l=document.getElementById('proglbl'); if(l)l.textContent=pct+'%';
+  const ft=document.getElementById('dayfoot'); if(ft)ft.textContent=`${done}/${total} Sätze in dieser Woche erledigt`;
+}
+function refreshJumpDeltas(){
+  const base=parseFloat(DB.jump[0]&&DB.jump[0].squat); let best=-Infinity;
+  const rows=document.querySelectorAll('.jump-row');
+  DB.jump.forEach((r,i)=>{ const sq=parseFloat(r.squat); if(!isNaN(sq)&&sq>best)best=sq;
+    const card=rows[i]; if(!card)return; const dEls=card.querySelectorAll('.jdelta b');
+    if(dEls.length){ if(i>0&&!isNaN(base)&&!isNaN(sq)){const d=sq-base; dEls[0].textContent=(d>0?'+':'')+d+' cm'; dEls[0].className=d>0?'up':(d<0?'dn':'');}
+      else if(dEls[0]){dEls[0].textContent='–';dEls[0].className='';}
+      if(dEls[1])dEls[1].textContent=(best>-Infinity?best+' cm':'–'); }
+  });
+}
+
+/* ---------- BACKUP ---------- */
+function exportBackup(){
+  const data = { vb_onerm: DB.onerm, vb_training: DB.training, vb_jump: DB.jump, vb_settings: DB.settings, exported: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `sprungkraft_backup_${date}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Backup gespeichert');
+}
+function importBackup(){
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='.json';
+  inp.onchange = async e => {
+    const file = e.target.files[0]; if(!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if(data.vb_onerm) { DB.onerm = data.vb_onerm; saveKey('vb_onerm', DB.onerm); }
+      if(data.vb_training) { DB.training = data.vb_training; saveKey('vb_training', DB.training); }
+      if(data.vb_jump) { DB.jump = data.vb_jump; saveKey('vb_jump', DB.jump); }
+      if(data.vb_settings) { DB.settings = data.vb_settings; saveKey('vb_settings', DB.settings); }
+      render();
+      showToast('✓ Backup wiederhergestellt');
+    } catch(err) { showToast('⚠ Fehler beim Laden'); }
+  };
+  inp.click();
+}
+function showToast(msg){
+  document.querySelectorAll('.backup-toast').forEach(t=>t.remove());
+  const t = document.createElement('div');
+  t.className='backup-toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2600);
+}
+
+boot();
+</script>
+</body>
+</html>
