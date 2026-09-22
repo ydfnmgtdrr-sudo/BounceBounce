@@ -1089,5 +1089,362 @@ function refreshJumpDeltas(){
 
 boot();
 </script>
+<!-- ==========================================================================
+     KNIE-BLOCK ADD-ON  ·  2 Wochen Sehnen-Reha  ·  v1.0  (2026-09-22)
+
+     EINFÜGEN:  diesen ganzen Block ans Ende von index-2.html setzen, direkt
+                vor dem schliessenden body-Tag — also NACH dem bestehenden
+                Script-Block. Am bestehenden Code aendert sich nichts.
+
+     ENTFERNEN: Block wieder löschen. Deine Daten (1RM, Logs, Sprünge,
+                Schmerz-Check) bleiben im Speicher erhalten.
+
+     WAS ES MACHT:
+       · fügt einen Block "KNIE" mit 2 Wochen à 3 Tagen hinzu, angezeigt
+         zwischen M4 und M5 (intern liegt er hinten, damit gespeicherte
+         Satz-Keys, currentProgram() und Sprung-Tracker unverändert bleiben)
+       · schwere Exzentrik (5 s) -> Heavy Slow Resistance 3 s/3 s @65–72 %
+       · Isometrie (Spanish Squat, Beinstrecker) als Hauptreiz
+       · reaktive Plyos raus, nur Box Jump mit Absteigen + Pogo flach
+       · Morgen-Schmerz-Check (links/rechts 0–10) mit Verlauf
+       · Banner auf der Übersicht + Button zum Block
+       · beim ersten Start einmalig direkt in den Knie-Block
+     ========================================================================== -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Vorbedingungen ---------- */
+  if (typeof DATA === 'undefined' || !DATA || !Array.isArray(DATA.mesos)) {
+    console.warn('[Knie-Block] DATA nicht gefunden — Add-on inaktiv.');
+    return;
+  }
+  if (DATA.__kneeBlock) return;        // doppeltes Einfügen abfangen
+  DATA.__kneeBlock = true;
+
+  const HEX = '#2dd4bf';               // Farbe des Knie-Blocks
+  const KI  = DATA.mesos.length;       // Index des neuen Blocks
+
+  const _esc = (typeof esc === 'function')
+    ? esc
+    : (s => (s == null ? '' : String(s)).replace(/[&<>"]/g,
+        c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])));
+
+  /* ---------- Bausteine ---------- */
+  // weeklyLoad braucht 4 Einträge (die App greift auf Index 0–3 zu).
+  // W3/W4 spiegeln W2, damit auch bei ungewollter Wochenwahl nichts bricht.
+  const wl = (a, b) => [a, b, b, b];
+  const ex = (cat, name, repGoal, cues, sets, calc, weeklyLoad) => {
+    const o = { cat: cat, name: name, repGoal: repGoal, cues: cues, sets: sets,
+                calc: calc || null,
+                pctLabel: calc ? (Math.round(calc.pct * 100) + '%') : 'BW / Tech' };
+    if (weeklyLoad) o.weeklyLoad = weeklyLoad;
+    return o;
+  };
+
+  const SPANISH = c => ex('Iso', 'Spanish Squat (Band) — isometrisch', '45 sek',
+    'Schweres Band um einen Pfosten, in BEIDE Kniekehlen. Zurücklehnen, Schienbeine senkrecht, 60–90° beugen und halten. Deutlich anstrengend, Schmerz max 3/10 — links flacher bleiben, wenn es oberhalb der Kniescheibe drückt. Wirkt schmerzdämpfend, deshalb ZUERST. W2: Hantel vor der Brust dazu. Auch an freien Tagen erlaubt.',
+    c, null);
+
+  const EXT_ISO = c => ex('Iso', 'Beinstrecker einbeinig — Isometrie 60°', '45 sek je Seite',
+    'Ein Bein, ca. 60° Beugung, Gewicht halten statt bewegen. Links und rechts getrennt dosieren — die Seite mit mehr Schmerz bekommt weniger Gewicht, nicht weniger Zeit. Schmerz max 3/10.',
+    c, null);
+
+  const ABD = ex('Reha', 'Hüftabduktion (Band-Walk / Seitlage)', '15 je Seite',
+    'Seitliche Hüftmuskulatur — wegen der Außenseite links. Langsam, keine Ausweichbewegung im Rumpf. 3×/Woche.',
+    3, null);
+
+  /* ---------- Trainingstage ---------- */
+  const DAYS = [
+    {
+      name: 'TAG 1 – Sehne & Quadrizeps (HSR + Isometrie)',
+      exercises: [
+        SPANISH(5),
+        ex('Squat', 'Back Squat — HSR 3 s runter / 3 s hoch', '6–8',
+          'ERSATZ für Slow Eccentric Squat und Cluster. Tempo 3 s/3 s, kein Bounce, kein Grinding. Nur so tief wie SCHMERZARM — notfalls Box Squat auf Parallel. W1 @65 %, W2 @70 % nur wenn der Morgenwert stabil ist.',
+          4, { lift: 'back_squat', pct: 0.65 },
+          wl({ sets: 4, pct: 0.65, note: 'W1 · 3s/3s @65%' },
+             { sets: 4, pct: 0.70, note: 'W2 · @70% wenn Morgenwert stabil' })),
+        ex('Squat', 'Leg Press — HSR 3 s / 3 s', '8',
+          'Geführte Last, gut dosierbar. Fuß eher hoch stellen = weniger Kniemoment. Knie am Ende nicht durchstrecken.',
+          3, { lift: 'leg_press', pct: 0.55 },
+          wl({ sets: 3, pct: 0.55, note: 'W1 @55%' },
+             { sets: 3, pct: 0.60, note: 'W2 @60%' })),
+        EXT_ISO(5),
+        ex('Wade', 'Calf Raise einbeinig — 3 s exzentrisch', '10 je Seite',
+          'Wade bleibt drin, sie ist nicht das Problem. Volle ROM, langsam runter.', 3, null),
+        ABD,
+        ex('Plyos', 'Box Jump MIT Absteigen', '4',
+          'NUR wenn der Morgenwert höchstens dem Normalwert entspricht. Rauf springen, runter STEIGEN — fast keine Landelast. Kein Depth, kein Reactive, kein Hurdle.',
+          2, null,
+          wl({ sets: 2, pct: null, note: 'W1 · 2 Sätze' },
+             { sets: 3, pct: null, note: 'W2 · 3 Sätze' })),
+        ex('Plyos', 'Pogo Jumps (flach)', '10',
+          'Flache Amplitude, fast nur Fußgelenk, Knie kaum gebeugt. Bei Schmerz über 3/10 sofort streichen.',
+          2, null,
+          wl({ sets: 2, pct: null, note: 'W1 · 2 Sätze' },
+             { sets: 3, pct: null, note: 'W2 · 3 Sätze' }))
+      ]
+    },
+    {
+      name: 'TAG 2 – Hüfte & Posterior Chain (knieschonend)',
+      exercises: [
+        SPANISH(4),
+        ex('Hinge', 'Romanian Deadlift', '6',
+          'Läuft normal weiter — Hüftdominant, kniefreundlich. Hüfte zurück, Stretch im Hamstring, neutraler Rücken.',
+          4, { lift: 'rdl', pct: 0.70 },
+          wl({ sets: 4, pct: 0.70, note: 'W1 @70%' },
+             { sets: 4, pct: 0.725, note: 'W2 @72,5%' })),
+        ex('Hinge', 'Hip Thrust', '8',
+          'Volle Hüftextension, 1 s Squeeze oben. Glute-Kraft hält die Sprungleistung, ohne das Knie zu belasten.',
+          4, { lift: 'hip_thrust', pct: 0.70 },
+          wl({ sets: 4, pct: 0.70, note: 'W1 @70%' },
+             { sets: 4, pct: 0.725, note: 'W2 @72,5%' })),
+        ex('Hinge', 'Nordic Hamstring Curl', '5',
+          'Bleibt drin. Langsam runter, exzentrischer Fokus.', 3, null),
+        ex('Hinge', 'Reverse Hyper', '12',
+          'Posterior Chain ohne Kniebelastung, entlastet zusätzlich die Lendenwirbelsäule.', 3, null),
+        ex('Olympic', 'Clean Pull', '3',
+          'Explosivität ohne Landung — dein bester Power-Reiz in diesen zwei Wochen. Triple Extension, kein Arm-Zug.',
+          4, { lift: 'clean_pull', pct: 0.80 },
+          wl({ sets: 4, pct: 0.78, note: 'W1 @78%' },
+             { sets: 4, pct: 0.80, note: 'W2 @80%' })),
+        ex('Upper', 'Med Ball Overhead Throw', '5',
+          '4–5 kg, maximale Wurfexplosivität. Ersetzt einen Teil des fehlenden Sprungvolumens.', 4, null),
+        ex('Reha', 'Copenhagen Plank', '20 sek je Seite',
+          'Adduktoren — gehört zum frontalen Muster und zur Außenseiten-Problematik. Kurz und sauber statt lang und zitternd.', 3, null)
+      ]
+    },
+    {
+      name: 'TAG 3 – Oberkörper & Core (Knie frei)',
+      exercises: [
+        ex('Upper', 'Push Press', '5',
+          'Läuft normal weiter. Hüft-Dip kurz und knapp halten, nicht tief in die Kniebeuge.',
+          4, { lift: 'push_press', pct: 0.75 },
+          wl({ sets: 4, pct: 0.75, note: 'W1 @75%' },
+             { sets: 4, pct: 0.775, note: 'W2 @77,5%' })),
+        ex('Upper', 'Dumbbell Bench Press', '8', 'Horizontaler Ausgleich, kontrollierte Exzentrik.', 4, null),
+        ex('Upper', 'Weighted Pull-Up', '5', 'Zusatzgewicht progressiv, volle Streckung unten.', 4, null),
+        ex('Upper', 'Dumbbell Row', '10 je Seite', 'Voller ROM, Rücken stabil.', 4, null),
+        ex('Upper', 'Cable Face Pull', '15', 'Schultergesundheit — nicht überspringen.', 3, null),
+        ex('Core', 'Ab Rollout', '8', 'Core-Stiffness, Hüfte stabil.', 3, null),
+        ex('Core', 'Pallof Press', '10 je Seite', 'Anti-Rotation, kein Drehen der Hüfte.', 3, null),
+        EXT_ISO(5),
+        ABD
+      ]
+    }
+  ];
+
+  /* ---------- Block registrieren ---------- */
+  DATA.mesos.push({
+    code: 'K',
+    title: 'KNIE-BLOCK  |  Sehnen-Reha — HSR & Isometrie  |  2 Wochen',
+    subtitle: 'Sehne wird durch dosierte Last belastbar, nicht durch Schonung. Schwere 5-s-Exzentrik und alles Reaktive raus, dafür Heavy Slow Resistance 3 s/3 s und Isometrie 5×45 s. Gesteuert wird über den Morgen-Schmerz-Test, nicht über das Gefühl beim Aufwärmen: im Training bis 3/10 ok, liegt der Morgenwert danach über deinem Normalwert, war der Vortag zu viel. Harte Tage bündeln — Gym-Sprünge eher auf Hallentage legen, damit die Sehne 48 h Pause bekommt. Keine Schmerzmittel, um durchzutrainieren.',
+    weeks: 'Nach W16 · 2 Wochen',
+    days: DAYS,
+    deload: '⚠️  Dieser Block hat nur 2 Wochen — W3 und W4 sind ausgeblendet. Danach entweder M5 (nur wenn die Morgenwerte ~2 Wochen stabil niedrig sind) oder eine weitere Brückenwoche.'
+  });
+
+  while (DATA.overview.rows.length < KI) DATA.overview.rows.push(DATA.overview.rows[0]);
+  DATA.overview.rows[KI] = ['K', 'nach W16', 'Reha', 'Knie-Block · Sehnen-Reha',
+    'HSR 3 s/3 s  /  Isometrie 5×45 s',
+    'Back Squat HSR, Leg Press HSR, Spanish Squat, RDL, Hip Thrust, Clean Pull',
+    'Niedrig', '65–72%', '6–8', '3–5', '6–7',
+    'Nur Box Jump mit Absteigen, Pogo flach',
+    'Tendon Loading', 'Sehne braucht Last statt Schonung — Steuerung über den Morgen-Schmerz-Test'];
+
+  if (typeof MESO_COLORS !== 'undefined') { while (MESO_COLORS.length <= KI) MESO_COLORS.push(HEX); MESO_COLORS[KI] = HEX; }
+  if (typeof MESO_HEX    !== 'undefined') { while (MESO_HEX.length    <= KI) MESO_HEX.push(HEX);    MESO_HEX[KI]    = HEX; }
+  if (typeof CAT_COLOR   !== 'undefined') { CAT_COLOR['Iso'] = '#22d3ee'; CAT_COLOR['Reha'] = '#2dd4bf'; }
+
+  /* ---------- Morgen-Schmerz-Check (in DB.settings.knee, läuft im normalen Backup mit) ---------- */
+  const today = () => new Date().toISOString().slice(0, 10);
+  let selDate = today();
+
+  function store() {
+    if (typeof DB === 'undefined') return {};
+    DB.settings = DB.settings || {};
+    DB.settings.knee = DB.settings.knee || {};
+    return DB.settings.knee;
+  }
+  function persist() {
+    if (typeof saveKey === 'function' && typeof DB !== 'undefined') { saveKey('vb_settings', DB.settings); return; }
+    try { window.localStorage.setItem('vb_settings', JSON.stringify(DB.settings)); } catch (e) {}
+  }
+  const clamp10 = v => {
+    if (v === '' || v == null) return '';
+    let n = parseFloat(String(v).replace(',', '.'));
+    if (isNaN(n)) return '';
+    return String(Math.max(0, Math.min(10, n)));
+  };
+
+  function histHTML() {
+    const st = store();
+    const ds = Object.keys(st).sort().reverse().slice(0, 8);
+    if (!ds.length) return '<div style="font-size:11.5px;color:var(--faint)">Noch keine Einträge. Trage den Wert morgens nach dem Aufstehen ein.</div>';
+    return ds.map(d => {
+      const v = st[d] || {};
+      const mx = Math.max(parseFloat(v.l) || 0, parseFloat(v.r) || 0);
+      const col = mx <= 3 ? 'var(--good)' : (mx <= 5 ? 'var(--accent)' : 'var(--bad)');
+      return '<div style="display:flex;gap:9px;align-items:baseline;font-size:11.5px;padding:4px 0;border-bottom:1px dashed var(--line)">'
+        + '<span style="color:var(--faint);font-weight:700;min-width:74px">' + _esc(d) + '</span>'
+        + '<b style="color:' + col + ';font-family:var(--f-disp);letter-spacing:.02em">L ' + _esc(v.l || '–') + ' / R ' + _esc(v.r || '–') + '</b>'
+        + (v.n ? '<span style="color:var(--muted)">' + _esc(v.n) + '</span>' : '')
+        + '</div>';
+    }).join('');
+  }
+
+  function panelHTML() {
+    const e = store()[selDate] || {};
+    return '<div class="card jump-row" id="knee-panel" style="border-left:4px solid ' + HEX + '">'
+      + '<div class="rh"><div class="lab">Morgen-Schmerz-Check</div>'
+      + '<div class="ms" style="background:' + HEX + '">0–10</div></div>'
+      + '<div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:11px">'
+      + '5 einbeinige Kniebeugen bis ca. 60° pro Bein, direkt nach dem Aufstehen, jeden Tag gleich. '
+      + 'Im Training sind bis 3/10 ok. Liegt der Morgenwert über deinem Normalwert, war der Vortag zu viel — nächste Einheit zurückfahren. '
+      + 'Eine Woche stabil = vorsichtig steigern.</div>'
+      + '<div class="jgrid dates"><div class="jfield"><label>Datum</label>'
+      + '<input type="date" data-knee="date" value="' + _esc(selDate) + '"></div></div>'
+      + '<div class="jgrid">'
+      + '<div class="jfield"><label>Links 0–10</label><input type="number" inputmode="decimal" min="0" max="10" data-knee="l" value="' + _esc(e.l || '') + '" placeholder="–"></div>'
+      + '<div class="jfield"><label>Rechts 0–10</label><input type="number" inputmode="decimal" min="0" max="10" data-knee="r" value="' + _esc(e.r || '') + '" placeholder="–"></div>'
+      + '<div class="jfield note"><label>Notiz</label><input type="text" data-knee="n" value="' + _esc(e.n || '') + '" placeholder="Halle, Schlaf, ..."></div>'
+      + '</div>'
+      + '<div style="margin-top:12px;padding-top:11px;border-top:1px dashed var(--line2)">'
+      + '<div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:6px">Verlauf</div>'
+      + '<div id="knee-hist">' + histHTML() + '</div></div>'
+      + '</div>';
+  }
+
+  /* ---------- DOM-Injektion (kein Eingriff in bestehende Render-Funktionen) ---------- */
+  const screen = document.getElementById('screen');
+  if (!screen) { console.warn('[Knie-Block] #screen fehlt — Add-on inaktiv.'); return; }
+  let busy = false;
+
+  // Der Block liegt im DATA-Array hinten (Index KI), damit die gespeicherten
+  // Satz-Keys, currentProgram() und der Sprung-Tracker unverändert bleiben.
+  // Angezeigt wird er aber dort, wo er zeitlich hingehört: zwischen M4 und M5.
+  const SLOT = 4;                       // Anzeigeposition = nach dem 4. Element
+  function moveIntoSlot(nodes) {
+    if (nodes.length !== KI + 1 || SLOT >= KI) return null;
+    // Nach dem ersten Verschieben stimmt die DOM-Reihenfolge nicht mehr mit der
+    // Datenreihenfolge überein — das Knie-Element wird deshalb markiert und
+    // danach über die Markierung wiedergefunden, nicht über seine Position.
+    let knee = nodes.find(n => n.dataset && n.dataset.kneeNode === '1');
+    if (!knee) knee = nodes[KI];
+    if (!knee) return null;
+    if (knee.dataset) knee.dataset.kneeNode = '1';
+    const before = nodes.filter(n => n !== knee)[SLOT];
+    if (before && before.previousElementSibling !== knee) {
+      before.parentNode.insertBefore(knee, before);
+    }
+    return knee;
+  }
+
+  function enhanceHome() {
+    try {
+      const segs = [...screen.querySelectorAll('.timeline .seg')];
+      moveIntoSlot(segs);
+      const l = [...screen.querySelectorAll('.tl-labels span')];
+      if (l.length === KI + 1) {
+        const names = [];
+        for (let i = 0; i < KI; i++) names.push('M' + (i + 1));
+        names.splice(SLOT, 0, 'K');
+        l.forEach((el, i) => { if (names[i] && el.textContent !== names[i]) el.textContent = names[i]; });
+      }
+      const v = screen.querySelectorAll('.hero .meta .v');
+      if (v[1] && v[1].textContent.trim() === String(KI)) v[1].textContent = KI + '+K';
+    } catch (err) {}
+    if (screen.querySelector('#knee-banner')) return;
+    screen.insertAdjacentHTML('afterbegin',
+      '<div class="card block-card" id="knee-banner" style="border-left:4px solid ' + HEX + ';margin-bottom:14px">'
+      + '<span class="tag" style="background:' + HEX + '">KNIE · 2 WOCHEN</span>'
+      + '<h3>Knie-Block läuft</h3>'
+      + '<div class="ph">Liegt zwischen M4 und M5. HSR und Isometrie statt schwerer Exzentrik, reaktive Plyos raus. Morgens den Schmerz-Check eintragen.</div>'
+      + '<div style="margin-top:13px"><button class="btn" data-openmeso="' + KI + '" data-week="0">Knie-Block öffnen</button></div>'
+      + '</div>');
+  }
+
+  function enhanceMesoList() {
+    const knee = moveIntoSlot([...screen.querySelectorAll('.meso-card')]);
+    const badge = knee && knee.querySelector('.meso-badge');
+    if (badge && badge.textContent.trim() !== 'K') badge.textContent = 'K';
+  }
+
+  function enhanceGuide() {
+    const knee = moveIntoSlot([...screen.querySelectorAll('.ov-tbl .ov-row')]);
+    const bd = knee && knee.querySelector('.bd');
+    if (bd && bd.textContent.trim() !== 'K') bd.textContent = 'K';
+  }
+
+  function enhanceDetail() {
+    if (typeof S !== 'undefined' && S.week > 1) {   // Knie-Block hat nur 2 Wochen
+      S.week = 0;
+      if (typeof render === 'function') render();
+      return;
+    }
+    const head = screen.querySelector('.detail-head');
+    if (head && !screen.querySelector('#knee-panel')) head.insertAdjacentHTML('afterend', panelHTML());
+    const wc = screen.querySelector('.weekctl');
+    if (wc && !wc.dataset.kneeDone) {
+      const bs = wc.querySelectorAll('button');
+      if (bs[0]) bs[0].innerHTML = 'W1<small>Knie 1</small>';
+      if (bs[1]) bs[1].innerHTML = 'W2<small>Knie 2</small>';
+      for (let i = 2; i < bs.length; i++) bs[i].style.display = 'none';
+      wc.style.gridTemplateColumns = 'repeat(2,1fr)';
+      wc.dataset.kneeDone = '1';
+    }
+  }
+
+  // Beim allerersten Rendern nach dem Einbau einmalig direkt in den Knie-Block
+  // springen, damit man sofort loslegen kann. Danach normale Navigation.
+  function firstRunJump() {
+    if (typeof DB === 'undefined' || !DB.settings) return false;
+    if (DB.settings.kneeEntered) return false;
+    DB.settings.kneeEntered = true;
+    persist();
+    S.view = 'training'; S.mesoIdx = KI; S.dayIdx = 0; S.week = 0;
+    if (typeof render === 'function') { render(); return true; }
+    return false;
+  }
+
+  function enhance() {
+    if (busy || typeof S === 'undefined') return;
+    // Erst handeln, wenn die App wirklich gerendert hat — vorher ist DB noch
+    // nicht aus dem Speicher geladen und ein Schreibzugriff würde ihn leeren.
+    if (!screen.firstElementChild) return;
+    busy = true;
+    try {
+      if (S.view === 'home') { if (firstRunJump()) { busy = false; return; } enhanceHome(); }
+      else if (S.view === 'training' && S.mesoIdx == null) enhanceMesoList();
+      else if (S.view === 'training' && S.mesoIdx === KI) enhanceDetail();
+      else if (S.view === 'guide') enhanceGuide();
+    } catch (err) { console.warn('[Knie-Block]', err); }
+    busy = false;
+  }
+
+  new MutationObserver(enhance).observe(screen, { childList: true });
+  enhance();
+  setTimeout(enhance, 0);
+
+  screen.addEventListener('input', function (e) {
+    const t = e.target;
+    const f = t.getAttribute && t.getAttribute('data-knee');
+    if (!f) return;
+    if (f === 'date') {
+      selDate = t.value || today();
+      const p = screen.querySelector('#knee-panel');
+      if (p) p.outerHTML = panelHTML();
+      return;
+    }
+    const st = store();
+    st[selDate] = st[selDate] || {};
+    st[selDate][f] = (f === 'n') ? t.value : clamp10(t.value);
+    persist();
+    const h = screen.querySelector('#knee-hist');
+    if (h) h.innerHTML = histHTML();
+  });
+})();
+</script>
 </body>
 </html>
