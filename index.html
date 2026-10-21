@@ -1446,5 +1446,1509 @@ boot();
   });
 })();
 </script>
+<!-- ==========================================================================
+     MAKROZYKLUS-2 ADD-ON  ·  Sehne → Power  ·  v1.0  (2026-10-20)
+
+     EINFÜGEN:  diesen ganzen Block ans Ende der App setzen, direkt vor dem
+                schließenden body-Tag — NACH dem Knie-Block-Add-on.
+                MZ1 (M1–M6 und Knie-Block) bleibt unverändert.
+
+     ENTFERNEN: Block wieder löschen. Deine MZ2-Daten bleiben im Speicher
+                (vb_training, vb_settings.mz2) und sind im Backup enthalten.
+
+     WAS ES MACHT:
+       · Makrozyklus 2 nach M6: 8 Mesozyklen à 3 Wochen (A, B1–B3, C1–C3, D)
+       · die ersten 13 Wochen in der Saison (Halle + Spiel), danach
+         Off-Season mit Sprung-Session am Samstag (Timer)
+       · Knie-Ampel aus Morgen-Check und Trainingsschmerz, 21-Tage-Verlauf
+       · Übergänge A→B, B→C und kurze Kontakte, "Mesozyklus wiederholen"
+       · Tests (Standsprung, Reach, VISA-P, 3RM → 1RM) im Sprung-Tab
+       · Wochenplan mit Warnungen, Guide-Abschnitt, Hinweis in M5/M6
+     ========================================================================== -->
+<style>
+#knee-banner{display:none !important}
+.mz-macro{margin-bottom:15px}
+.mz-macro button{font-size:13px;letter-spacing:.04em;padding:9px 2px}
+.mz-amp{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-disp);font-size:13px;letter-spacing:.06em;padding:5px 11px;border-radius:9px;color:#0c0d11;text-transform:uppercase;line-height:1.15}
+.mz-amp.green{background:var(--good)}
+.mz-amp.yellow{background:#fbbf24}
+.mz-amp.red{background:var(--bad)}
+.mz-amp.none{background:var(--surface2);color:var(--muted);border:1px solid var(--line2)}
+.mz-why{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.5}
+.mz-act{font-size:12.5px;color:var(--text);margin-top:6px;line-height:1.5;font-weight:600}
+.mz-strip{display:grid;grid-template-columns:repeat(21,minmax(0,1fr));gap:3px;margin-top:12px}
+.mz-strip i{display:block;height:13px;border-radius:3px;background:var(--surface2);border:1px solid var(--line)}
+.mz-strip i.green{background:var(--good);border-color:transparent}
+.mz-strip i.yellow{background:#fbbf24;border-color:transparent}
+.mz-strip i.red{background:var(--bad);border-color:transparent}
+.mz-strip i.now{outline:2px solid var(--text);outline-offset:1px}
+.mz-strip-l{display:flex;justify-content:space-between;font-size:9px;color:var(--faint);font-weight:700;letter-spacing:.06em;margin-top:5px;text-transform:uppercase}
+.mz-sub{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:14px 0 7px}
+.mz-warm{display:flex;gap:6px}
+.mz-warm button{flex:1;border:1px solid var(--line2);background:var(--surface2);color:var(--muted);border-radius:10px;padding:9px 4px;font-weight:700;font-size:11.5px;cursor:pointer;font-family:var(--f-body);line-height:1.25}
+.mz-warm button.on{background:var(--accent);border-color:transparent;color:#1a0e03}
+.mz-note{font-size:10.5px;color:var(--faint);margin-top:10px;line-height:1.5}
+.mz-tl{display:flex;gap:4px;margin-top:16px;align-items:center}
+.mz-tl .seg{flex:1;height:8px;border-radius:5px;opacity:.4}
+.mz-tl .seg.past{opacity:.85}
+.mz-tl .seg.on{opacity:1;height:12px;box-shadow:0 0 12px -1px currentColor}
+.mz-tll{display:flex;gap:4px;margin-top:5px}
+.mz-tll span{flex:1;text-align:center;font-size:9px;color:var(--faint);font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden}
+.mz-season{position:relative;height:5px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:11px;overflow:hidden}
+.mz-season b{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(255,122,26,.8),rgba(255,122,26,.4))}
+.mz-sl{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.07em;margin-top:5px;text-transform:uppercase}
+.mz-hm{display:flex;gap:18px;margin-top:16px;flex-wrap:wrap}
+.mz-hm .v{font-family:var(--f-disp);font-size:24px;line-height:1;letter-spacing:.02em}
+.mz-hm .k{font-size:9.5px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;font-weight:700;margin-top:3px}
+.mz-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px dashed var(--line2);font-size:12.5px;line-height:1.45}
+.mz-row:first-child{border-top:0;padding-top:2px}
+.mz-row .ico{flex:none;width:26px;text-align:center;font-size:16px;line-height:1.2}
+.mz-row b{font-weight:800}
+.mz-row small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+.mz-grid{display:grid;grid-template-columns:52px repeat(7,minmax(0,1fr));gap:4px;align-items:center;margin-top:10px}
+.mz-grid .h{font-size:9.5px;color:var(--faint);font-weight:800;text-align:center;letter-spacing:.04em}
+.mz-grid .l{font-size:10.5px;color:var(--muted);font-weight:800;line-height:1.1}
+.mz-grid button{height:30px;border-radius:8px;border:1px solid var(--line2);background:var(--surface2);color:#1a0e03;font-weight:900;font-size:12px;cursor:pointer;padding:0}
+.mz-grid button.on{background:var(--accent);border-color:transparent}
+.mz-grid .ld{font-size:8.5px;text-align:center;font-weight:800;border-radius:6px;padding:4px 0;letter-spacing:.02em}
+.mz-grid .ld.hi{background:rgba(248,113,113,.16);color:#fca5a5}
+.mz-grid .ld.lo{background:rgba(52,211,153,.12);color:#6ee7b7}
+.mz-grid .ld.fr{color:var(--faint)}
+.mz-warn{margin-top:10px;padding:10px 12px;border-radius:11px;font-size:11.5px;line-height:1.45;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fde68a}
+.mz-good{margin-top:10px;padding:10px 12px;border-radius:11px;font-size:11.5px;line-height:1.45;border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.07);color:#a7f3d0}
+.mz-gate ul{margin:10px 0 0;padding:0;list-style:none}
+.mz-gate li{display:flex;gap:9px;font-size:12px;line-height:1.45;padding:7px 0;border-top:1px dashed var(--line)}
+.mz-gate li:first-child{border-top:0}
+.mz-gate li .ic{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:900;color:#0c0d11;margin-top:1px}
+.mz-gate li .ic.ok{background:var(--good)}
+.mz-gate li .ic.no{background:var(--surface2);color:var(--muted);border:1px solid var(--line2)}
+.mz-gate li small{display:block;color:var(--faint);font-size:10.5px}
+.mz-gate label.mz-chk{display:flex;gap:8px;align-items:center;font-size:12px;margin-top:6px;color:var(--text);cursor:pointer}
+.mz-gate label.mz-chk input{width:18px;height:18px;accent-color:var(--accent)}
+.mz-btnrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.mz-btnrow .btn{flex:1;min-width:135px;font-size:13.5px;padding:11px 10px}
+.mz-done-tag{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:var(--good);letter-spacing:.03em}
+.ex.mz-dim{opacity:.5}
+.mz-flag{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:6px;margin-top:9px}
+.mz-flag.alt{background:rgba(96,165,250,.14);color:#93c5fd}
+.mz-flag.skip{background:rgba(251,191,36,.15);color:#fcd34d}
+.mz-last{font-size:10.5px;color:var(--muted);margin-top:9px}
+.mz-last b{color:var(--text);font-weight:800}
+.mz-ls{font-size:9.5px;color:var(--muted);margin-left:4px}
+.mz-rmbtn{margin-left:6px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:2px 7px;font-size:10px;font-weight:800;cursor:pointer;font-family:var(--f-body)}
+.mz-rmbtn[disabled]{border-color:var(--good);color:var(--good);background:rgba(52,211,153,.1);cursor:default}
+.mz-timer{margin-top:12px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line2);text-align:center}
+.mz-tv{font-family:var(--f-disp);font-size:50px;letter-spacing:.04em;line-height:1}
+.mz-tv.end{color:var(--accent)}
+.mz-tb{display:flex;gap:8px;margin-top:12px}
+.mz-contacts{display:flex;gap:14px;flex-wrap:wrap;margin:2px 2px 14px;font-size:11px;color:var(--muted);align-items:baseline}
+.mz-contacts b{font-family:var(--f-disp);font-size:15px;color:var(--text);letter-spacing:.02em;margin-right:3px}
+.mz-contacts b.over{color:var(--bad)}
+.mz-jrow{padding:14px 15px;margin-bottom:11px}
+.mz-jrow .rh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.mz-jrow .lab{font-weight:800;font-size:13.5px}
+.mz-jrow .lab small{display:block;font-size:10.5px;color:var(--muted);font-weight:700;margin-top:1px}
+.mz-jrow .ms{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#0c0d11;padding:3px 8px;border-radius:7px}
+.mz-jrow .jgrid+.jgrid{margin-top:8px}
+.mz-spark{width:100%;height:auto;display:block}
+.mz-dl{display:flex;gap:14px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px dashed var(--line2)}
+.mz-dl .d{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.mz-dl .d b{display:block;font-family:var(--f-disp);font-size:16px;letter-spacing:.02em;margin-top:2px;color:var(--text)}
+.mz-dl .d b.up{color:var(--good)}
+.mz-dl .d b.dn{color:var(--bad)}
+.mz-amptbl{padding:15px 16px;margin:16px 0 14px}
+.mz-amptbl h3{font-family:var(--f-disp);font-size:16px;letter-spacing:.04em;margin:0 0 10px;text-transform:uppercase}
+.mz-amptbl .r{display:flex;gap:10px;padding:9px 0;border-top:1px dashed var(--line2);font-size:12px;line-height:1.5}
+.mz-amptbl .r:first-of-type{border-top:0}
+.mz-amptbl .r .mz-amp{flex:none;align-self:flex-start;min-width:62px;justify-content:center}
+.mz-amptbl .r p{margin:0;color:var(--muted)}
+.mz-amptbl .r p b{color:var(--text)}
+.meso-card{color:var(--text)}
+.mz-badge{font-size:20px}
+.mz-days button{line-height:1.05;padding:8px 2px}
+.mz-days button small{display:block;font-family:var(--f-body);font-size:9.5px;letter-spacing:.06em;font-weight:700;margin-top:2px;opacity:.75}
+.mz-badge small{font-size:11px;margin-left:1px}
+</style>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Vorbedingungen ---------- */
+  if (typeof DATA === 'undefined' || typeof DB === 'undefined' || typeof S === 'undefined' ||
+      typeof render !== 'function' || typeof saveKey !== 'function') {
+    console.warn('[MZ2] Basis-App nicht gefunden — Add-on inaktiv.');
+    return;
+  }
+  if (DATA.__mz2) return;                 // doppeltes Einfügen abfangen
+  DATA.__mz2 = true;
+  const screen = document.getElementById('screen');
+  if (!screen) { console.warn('[MZ2] #screen fehlt — Add-on inaktiv.'); return; }
+
+  /* ---------- Helfer ---------- */
+  const E = (typeof esc === 'function') ? esc
+    : (s => (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])));
+  const DAYMS = 864e5;
+  const p2 = n => String(n).padStart(2, '0');
+  const isoD = d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+  const parseD = s => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if (!m) return null;
+    const d = new Date(+m[1], +m[2] - 1, +m[3]);
+    return isNaN(d) ? null : d;
+  };
+  const addD = (d, n) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; };
+  const diffD = (a, b) => Math.round((a - b) / DAYMS);
+  const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+  const WDN = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+  const fmtD = d => p2(d.getDate()) + '.' + p2(d.getMonth() + 1) + '.';
+  const fmtWD = d => WDN[d.getDay()] + ' ' + fmtD(d);
+  const num = v => { const x = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isNaN(x) ? null : x; };
+  const fmtN = x => (Math.round(x * 10) / 10).toString().replace('.', ',');
+  const kgR = x => Math.round(x / 2.5) * 2.5;
+  const keepScroll = fn => { const y = window.scrollY; fn(); window.scrollTo(0, y); };
+  const inDays = n => (n === 1 ? 'morgen' : 'in ' + n + ' Tagen');
+
+  if (typeof CAT_COLOR !== 'undefined') {
+    CAT_COLOR.Iso = CAT_COLOR.Iso || '#22d3ee';
+    CAT_COLOR.Reha = CAT_COLOR.Reha || '#2dd4bf';
+  }
+
+  /* ---------- Einstellungen (in DB.settings.mz2 → läuft im Backup mit) ---------- */
+  function cfg() {
+    DB.settings = DB.settings || {};
+    const c = DB.settings.mz2 = DB.settings.mz2 || {};
+    if (!c.sched) c.sched = { A: 2, B: 4, C: 1, S: 6 };
+    if (!Array.isArray(c.hall)) c.hall = [2, 4];
+    if (c.match === undefined) c.match = 6;
+    if (!c.sess) c.sess = {};
+    if (!c.gates) c.gates = {};
+    if (!c.tests) c.tests = {};
+    if (!c.rep) c.rep = {};
+    return c;
+  }
+  const persist = () => saveKey('vb_settings', DB.settings);
+  const persistT = () => saveKey('vb_training', DB.training);
+  function kneeStore() {
+    DB.settings = DB.settings || {};
+    DB.settings.knee = DB.settings.knee || {};
+    return DB.settings.knee;
+  }
+
+  /* ---------- Übungsbibliothek ---------- */
+  // k: lift | iso | hold | plyo | bw | test | timer
+  const LIB = {
+    iso_sp: { n: 'Spanish Squat (Band) — Isometrie', cat: 'Iso', k: 'iso',
+      c: 'Schweres Band um einen Pfosten, in beide Kniekehlen. Zurücklehnen, Schienbeine senkrecht, 60–90° beugen und halten, etwa 70 % Anstrengung. Schmerz höchstens 3/10. Zugleich dein Aufwärmtest: Wird es von Satz zu Satz besser, ist die Sehne bereit. Ohne Band: Wandsitz.' },
+    iso_ext: { n: 'Beinstrecker einbeinig — Isometrie 60°', cat: 'Iso', k: 'iso',
+      c: 'Ein Bein, Knie etwa 60° gebeugt, Gewicht halten statt bewegen, etwa 70 % Anstrengung. Die Seite mit mehr Schmerz bekommt weniger Gewicht, nicht weniger Zeit. Schmerz höchstens 3/10.' },
+    hold_lp: { n: 'Beinpresse einbeinig — Haltesätze bei 90°', cat: 'Iso', k: 'hold', tempo: '3 s halten',
+      c: 'Pro Satz 4 Wiederholungen je Bein: bis 90° Kniewinkel absenken, 3 s halten, hochdrücken. Last so, dass das Halten deutlich schwer ist (etwa 80–90 % Anstrengung), Schmerz höchstens 2–3/10. Steigern, wenn alle Sätze sauber gehen. Protokoll nach Mersmann 2021: zweimal pro Woche über eine Saison.' },
+    sq_hsr: { n: 'Back Squat Heavy-Slow', cat: 'Squat', k: 'lift', lift: 'back_squat', tempo: '3↓ 3↑',
+      c: '3 s runter, 3 s hoch, unten nicht federn, kein Grinden. Nur so tief, wie es schmerzarm bleibt — anfangs Box auf Parallelhöhe, ab Phase B tiefer, wenn es ruhig bleibt. Last so wählen, dass 2–3 saubere Wiederholungen übrig bleiben; die %-Werte sind Richtwerte, das langsame Tempo drückt die Last.' },
+    sq: { n: 'Back Squat — Erhalt', cat: 'Squat', k: 'lift', lift: 'back_squat',
+      c: 'Volumen runter, Last bleibt. Schnell und sauber, 2–3 Wiederholungen im Tank.' },
+    sq_pause: { n: 'Pause Squat — Doubles', cat: 'Squat', k: 'lift', lift: 'back_squat', tempo: '2 s Pause',
+      c: '2 s Pause unten mit voller Spannung, dann explosiv hoch. Doubles bei 70–85 % sind THPs Lieblingsprotokoll: Kraft ohne Grinden. Immer nach der Sprung-Variante, nie davor.' },
+    sq_single: { n: 'Back Squat — Top-Single', cat: 'Squat', k: 'lift', lift: 'back_squat',
+      c: 'Nach den Pause-Doubles ein schneller, sauberer Single. Wird er langsam, ist für heute Schluss. Nur bei Grün; bei Gelb weglassen.' },
+    sq_back: { n: 'Back Squat Backoff — Heavy-Slow', cat: 'Squat', k: 'lift', lift: 'back_squat', tempo: '3↓ 3↑',
+      c: '3 s runter und 3 s hoch. Hält die Sehnenlast hoch, während die schweren Sätze kurz bleiben.' },
+    sq_3rm: { n: 'Back Squat — 3RM-Test', cat: 'Squat', k: 'lift', lift: 'back_squat', test: true,
+      c: 'Optional und nur bei Grün. In Stufen aufwärmen (etwa 50/70/80/90 % des Ziels), dann das Gewicht für genau 3 saubere Wiederholungen suchen, höchstens 3 Anläufe, kein Grinden. Das e1RM kannst du direkt als neues 1RM übernehmen. Wenn du testest, entfallen die Arbeitssätze danach.' },
+    lp_hsr: { n: 'Beinpresse Heavy-Slow', cat: 'Squat', k: 'lift', lift: 'leg_press', tempo: '3↓ 3↑',
+      c: 'Füße eher hoch und schulterbreit — weniger Kniemoment. 3 s runter, 3 s hoch, oben die Knie nicht durchstrecken. Tiefe nach Schmerz.' },
+    ext_hsr: { n: 'Beinstrecker einbeinig — Heavy-Slow', cat: 'Squat', k: 'lift', tempo: '3↑ 3↓',
+      c: '3 s hoch, 3 s runter, voller Weg, soweit schmerzarm. Links und rechts gleiche Wiederholungen, die schwächere Seite gibt das Gewicht vor. Merk dir das Gewicht je Seite — es zählt beim Übergang B → C.' },
+    ext_ecc: { n: 'Beinstrecker exzentrisch — 2 hoch, 1 runter', cat: 'Squat', k: 'lift', tempo: '4 s ↓',
+      c: 'Mit beiden Beinen hochdrücken, mit einem Bein in 4 s ablassen. Exzentrische Überlast ist die Stufe vor schnellen Bewegungen. Last etwa 10–20 % über deinem einbeinigen Heavy-Slow-Gewicht, Schmerz höchstens 2–3/10.' },
+    calf_seat: { n: 'Wadenheben sitzend (Soleus) — schwer', cat: 'Wade', k: 'lift', tempo: '3↑ 3↓',
+      c: '3 s hoch, oben kurz halten, 3 s runter. Schwer — der Soleus trägt beim Springen und Landen viel Last.' },
+    calf_sl: { n: 'Wadenheben einbeinig stehend', cat: 'Wade', k: 'lift', tempo: '3 s ↓',
+      c: 'Voller Weg von ganz unten bis ganz oben, 3 s ablassen. Kurzhantel dazu, sobald 3×12 locker gehen.' },
+    abd: { n: 'Hüftabduktion (Maschine oder Band)', cat: 'Reha', k: 'lift',
+      c: 'Seitliche Hüftmuskulatur — sie hält das Knie bei der Landung in der Spur. Langsam, kein Ausweichen im Rumpf.' },
+    cpull: { n: 'Clean Pull', cat: 'Olympic', k: 'lift', lift: 'clean_pull',
+      c: 'Explosive Hüftstreckung ohne Fangen und ohne Landung — der kniefreundlichste Power-Reiz. Arme lang, Stange nah am Körper, voll auf die Zehen.' },
+    hpc: { n: 'Hang Power Clean', cat: 'Olympic', k: 'lift', lift: 'hang_clean',
+      c: 'Aus dem Hang knapp über dem Knie explosiv strecken und hoch fangen (Viertelhocke), weich über die Hüfte. Geschwindigkeit vor Gewicht: Wird die Stange langsam, Gewicht runter.' },
+    hpc_3rm: { n: 'Hang Power Clean — 3RM-Test', cat: 'Olympic', k: 'lift', lift: 'hang_clean', test: true,
+      c: 'Optional und nur bei Grün. In Stufen steigern, die Technik muss schnell bleiben. Wenn du testest, entfallen die Arbeitssätze danach.' },
+    rdl: { n: 'Romanian Deadlift', cat: 'Hinge', k: 'lift', lift: 'rdl',
+      c: 'Hüfte nach hinten, Rücken neutral, Dehnung in den Hamstrings. Hüftdominant und kniefreundlich.' },
+    hip: { n: 'Hip Thrust', cat: 'Hinge', k: 'lift', lift: 'hip_thrust',
+      c: 'Volle Hüftstreckung, 1 s oben halten. Gesäßkraft hält die Sprungleistung, ohne das Knie zu belasten.' },
+    nordic: { n: 'Nordic Hamstring Curl', cat: 'Hinge', k: 'bw',
+      c: 'So langsam ablassen, wie du kontrollieren kannst, mit den Händen abfangen. Starke Hamstrings entlasten das Knie bei der Landung.' },
+    copen: { n: 'Copenhagen Plank', cat: 'Reha', k: 'bw',
+      c: 'Adduktoren für die seitliche Stabilität. Kurz und sauber statt lang und zitternd, anfangs mit dem Knie auf der Bank.' },
+    pogo: { n: 'Pogo Jumps (flach)', cat: 'Plyos', k: 'plyo',
+      c: 'Flache Sprünge fast nur aus dem Sprunggelenk, Knie kaum gebeugt, kurzer Bodenkontakt. Zählt zum Aufwärmen. Bei Schmerz über 2/10 streichen.' },
+    land: { n: 'Drop-Landung (20–30 cm)', cat: 'Plyos', k: 'plyo',
+      c: 'Von einer niedrigen Box steigen und beidbeinig landen, kein Absprung. Weich über die Hüfte landen: Hüfte zurück, Brust vor, Knie über den Zehen. Genau dieses Muster schützt die Sehne, wenn du müde bist.' },
+    sj: { n: 'Squat Jump aus der Pause', cat: 'Plyos', k: 'plyo', hi: true,
+      c: 'Viertel- bis halbe Hocke, 2 s Pause, dann maximal abspringen — langer Kontakt, kein Ausholen. Beidbeinig und über die Hüfte landen, volle Pause zwischen den Sätzen. Nur bei Grün.' },
+    broad: { n: 'Broad Jump mit Stand-Landung', cat: 'Plyos', k: 'plyo', hi: true,
+      c: 'Vorher 2–3 lockere Steigerungssprünge. Dann maximal weit springen und die Landung 2 s halten. Über die Hüfte landen, jeder Sprung mit vollem Einsatz, volle Pause. Nur bei Grün.' },
+    hurdle: { n: 'Hürdensprünge niedrig (kurzer Kontakt)', cat: 'Plyos', k: 'plyo', hi: true, gate: 'g3', alt: 'sj',
+      c: 'Niedrige Hürden (15–30 cm), 4 Sprünge am Stück mit kurzem Bodenkontakt, Knie bleiben weich. Erst nach drei Wochen durchgehend Grün. Bei Schmerz über 2/10 abbrechen.' },
+    ddip: { n: 'Double-Dip Jump', cat: 'Plyos', k: 'plyo', hi: true, gate: 'g3', alt: 'broad',
+      c: 'Aus dem Stand kurz in die Viertelhocke, minimal hochfedern, sofort ein zweiter schneller Dip und maximal abspringen — der schnelle Wechsel wie im Anlauf. Beidbeinig über die Hüfte landen. Erst nach drei Wochen durchgehend Grün.' },
+    depth: { n: 'Depth Jump (30 cm)', cat: 'Plyos', k: 'plyo', hi: true, gate: 'g3', alt: 'broad',
+      c: 'Von 30 cm fallen lassen (nicht abspringen), landen und sofort maximal hoch. Kurzer Kontakt, aber nicht steif. Die Höhe bleibt niedrig. Nur nach drei Wochen durchgehend Grün und nur, wenn heute Grün ist.' },
+    sjtest: { n: 'Standsprung-Test', cat: 'Plyos', k: 'test', sync: 'sj',
+      c: 'Nach dem Aufwärmen, vor den schweren Sätzen. Ohne Anlauf und immer gleich ausgeführt (Ausholbewegung mit Armschwung). 3 Versuche, der beste zählt und landet automatisch im Sprung-Tab. Nur schmerzfrei, sonst auslassen. Liegt der Wert 5 % oder mehr unter dem letzten Test, beginnt der nächste Zyklus leichter.' },
+    reach: { n: 'Reach-Test mit Anlauf', cat: 'Plyos', k: 'test', sync: 'reach',
+      c: 'Nach 20–30 min Aufwärmen 3 Anlaufsprünge mit voller Pause, der beste zählt. Eintragen als Sprunghöhe: Reach mit Anlauf minus Standreichhöhe, immer gleich gemessen. Nur schmerzfrei.' },
+    timer: { n: 'Sprung-Session mit Timer', cat: 'Plyos', k: 'timer',
+      c: '20–30 min aufwärmen: Isometrie 2×30 s, Einlaufen, Pogos, Steigerungssprünge. Dann Maximalsprünge mit voller Pause, z. B. Anlauf-Angriffssprünge und Blocksprünge. Der Timer zählt nur die Maximalsprünge: Läuft er ab, ist Schluss. Nie verlängern, keine Extra-Session. Abbrechen bei Schmerz 3/10 oder wenn die Sprünge spürbar schlechter werden. Nur bei Grün.' },
+    pp: { n: 'Push Press', cat: 'Upper', k: 'lift', lift: 'push_press',
+      c: 'Kurzer, knapper Dip aus der Hüfte statt tief in die Kniebeuge. Explosiv über Kopf, kontrolliert zurück.' },
+    db_bench: { n: 'Kurzhantel-Bankdrücken', cat: 'Upper', k: 'lift', c: 'Kontrolliert ablassen, Schulterblätter zusammen.' },
+    pullup_w: { n: 'Klimmzug mit Zusatzgewicht', cat: 'Upper', k: 'lift', c: 'Unten voll strecken, Brust zur Stange. Zusatzgewicht steigern, wenn alle Wiederholungen sauber gehen.' },
+    db_row: { n: 'Kurzhantel-Rudern', cat: 'Upper', k: 'lift', c: 'Voller Weg, Rücken stabil.' },
+    face: { n: 'Face Pull (Kabel)', cat: 'Upper', k: 'lift', c: 'Schultergesundheit fürs Angreifen — nicht überspringen.' },
+    pallof: { n: 'Pallof Press', cat: 'Core', k: 'lift', c: 'Anti-Rotation, die Hüfte bleibt ruhig.' },
+    ankle: { n: 'Sprunggelenk-Mobilität (Knie zur Wand)', cat: 'Recovery', k: 'bw',
+      c: 'Fuß vor der Wand, Knie über die Zehen zur Wand schieben, Ferse bleibt unten, 2 s halten. Eingeschränkte Beweglichkeit im Sprunggelenk ist mit Patellasehnen-Beschwerden verbunden. Ziel: etwa 10 cm Abstand Zehen–Wand, links und rechts gleich.' }
+  };
+
+  /* ---------- Programm ---------- */
+  const e = (id, sets, reps, pct, o) => Object.assign({ id: id, sets: sets, reps: String(reps), pct: pct == null ? null : pct }, o || {});
+  const W3 = [0, 0, 1], W12 = [1, 1, 0];
+  const TEST = e('sjtest', 3, '1 Versuch', null, { w: W3 });
+  const dayC = (ppSets, ppReps, ppPct, o) => {
+    o = o || {};
+    return [
+      e('iso_ext', o.iso || 3, '45 s je Bein'),
+      e('pp', ppSets, ppReps, ppPct),
+      e('db_bench', 3, o.bench || '8'),
+      e('pullup_w', 4, o.pull || '5'),
+      e('db_row', 3, '10 je Seite'),
+      e('face', 3, '15'),
+      e('pallof', 3, '10 je Seite'),
+      e('ankle', 2, '10 je Seite')
+    ];
+  };
+  const dayCLight = (ppSets, ppReps, ppPct) => [
+    e('iso_ext', 3, '45 s je Bein'),
+    e('pp', ppSets, ppReps, ppPct),
+    e('db_bench', 2, '8'),
+    e('pullup_w', 3, '5'),
+    e('db_row', 2, '10 je Seite'),
+    e('face', 2, '15'),
+    e('ankle', 2, '10 je Seite')
+  ];
+
+  const ORDER = ['A', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D'];
+  const MZ = {
+    A: { t: 'Beruhigen & Basis', col: '#2dd4bf', int: '65–70', cap: { all: 20, hi: 0 },
+      f: 'Isometrie täglich · Heavy-Slow bis parallel · im Gym nur flache Pogos',
+      key: 'Ziel: die Sehne beruhigen und belastbar machen. Isometrie 5×45 s jeden Tag — an freien Tagen zuhause als Spanish Squat oder Wandsitz. Kniebeuge und Beinpresse 3 s runter, 3 s hoch, nur so tief wie schmerzarm. Im Kraftraum bis 2/10, Morgen-Check täglich. Halle und Spiel laufen weiter, sie sind in der Saison dein Sprungreiz.',
+      days: {
+        A: [e('iso_sp', 5, '45 s'), e('sq_hsr', 4, 8, [0.65, 0.70], { n: 'Back Squat Heavy-Slow (bis parallel)' }), e('lp_hsr', 3, 8, [0.55, 0.60]),
+            e('iso_ext', 3, '45 s je Bein'), e('calf_seat', 3, 10), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 3, '45 s'), e('pogo', 2, 10), TEST, e('cpull', 4, 3, [0.75, 0.80]), e('rdl', 4, 6, [0.65, 0.70]),
+            e('hip', 4, 8, [0.70, 0.725]), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 5, [0.70, 0.725], { iso: 5 })
+      } },
+    B1: { t: 'Schwer & langsam I', col: '#7dd3fc', int: '70–73', cap: { all: 40, hi: 0 }, reach: true,
+      f: 'Heavy-Slow 4×8 · Beinstrecker einbeinig · Pogos und Landungen',
+      key: 'Heavy-Slow ist der Hauptreiz dieses Zyklus: Sehnen werden durch hohe Spannung über lange Zeit belastbar, nicht durch Sprünge. Last über die Wochen steigern, das Tempo bleibt 3 s / 3 s. Isometrie 2×30 s als Aufwärmtest vor Gym, Halle und Spiel. In W3 Reach-Test in der Halle.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('sq_hsr', 4, 8, [0.70, 0.725]), e('lp_hsr', 3, 8, [0.60, 0.625]), e('ext_hsr', 3, '10 je Bein'),
+            e('calf_seat', 3, 10), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), e('pogo', 3, 10), TEST, e('land', 2, 5), e('cpull', 4, 3, [0.80, 0.825]), e('rdl', 4, 6, [0.70, 0.725]),
+            e('hip', 4, 8, [0.725, 0.75]), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 5, [0.725, 0.75])
+      } },
+    B2: { t: 'Schwer & langsam II', col: '#38bdf8', int: '75–78', cap: { all: 40, hi: 0 },
+      f: 'Heavy-Slow 4×6 · Haltesätze einbeinig bei 90° · Hang Power Clean',
+      key: 'Neu sind einbeinige Haltesätze an der Beinpresse (5 Sätze à 4 × 3 s bei 90°), zweimal pro Woche — in Studien blieben Spieler damit über eine Saison beschwerdefrei. Kniebeuge-Tiefe steigern, solange es schmerzarm bleibt. Aus dem Clean Pull wird der Hang Power Clean.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('sq_hsr', 4, 6, [0.75, 0.775]), e('hold_lp', 5, '4 × 3 s je Bein'), e('ext_hsr', 3, '8 je Bein'),
+            e('calf_seat', 3, 8), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), e('pogo', 3, 10), TEST, e('land', 2, 5), e('hpc', 5, 3, [0.70, 0.725]), e('rdl', 4, 5, [0.75, 0.775]),
+            e('hip', 4, 6, [0.75, 0.775]), e('hold_lp', 5, '4 × 3 s je Bein'), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 4, [0.775, 0.80])
+      } },
+    B3: { t: 'Schwer & langsam III', col: '#0ea5e9', int: '78–80', cap: { all: 40, hi: 0 }, reach: true,
+      f: 'Kniebeuge 5×5 mit 3 s runter · 3RM-Test in W3 bei Grün',
+      key: 'Die schwerste Phase in der Saison: 5×5 mit 3 s Exzentrik bei rund 80 %. In W3 testest du bei Grün das 3RM in Kniebeuge und Hang Power Clean, die App rechnet daraus das neue 1RM. Danach den Übergang B → C prüfen. In W3 Reach-Test in der Halle.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('sq_3rm', 1, '3RM', null, { w: W3 }),
+            e('sq_hsr', 5, 5, [0.775, 0.80], { n: 'Back Squat — 3 s runter', tempo: '3↓',
+              c: '3 s runter, normal hoch. Volle Tiefe, wenn sie schmerzarm ist, 2 Wiederholungen im Tank. In W3 entfallen diese Sätze, wenn du das 3RM testest.' }),
+            e('hold_lp', 5, '4 × 3 s je Bein'), e('ext_hsr', 3, '8 je Bein'), e('calf_seat', 3, 8), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), e('pogo', 3, 10), TEST, e('land', 2, 5), e('hpc_3rm', 1, '3RM', null, { w: W3 }), e('hpc', 5, 2, [0.75, 0.80]),
+            e('rdl', 3, 5, [0.775, 0.80]), e('hip', 3, 6, [0.775, 0.80]), e('hold_lp', 5, '4 × 3 s je Bein'), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 3, [0.80, 0.825])
+      } },
+    C1: { t: 'Kraft → Power I', col: '#fcd34d', int: '75–80', cap: { all: 52, hi: 32 },
+      f: 'Sprung zuerst · Pause-Squat-Doubles · Exzentrik einbeinig',
+      key: 'Jetzt kommt Geschwindigkeit dazu: zuerst eine Sprung-Variante mit langem Kontakt, dann Pause-Squat-Doubles, danach 2×6 Heavy-Slow. Exzentrische Überlast am Beinstrecker einmal pro Woche. Nach Saisonende ersetzt die Sprung-Session am Samstag das Spiel — mit Timer, nie verlängern.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('pogo', 2, 10), e('sj', 4, 4), e('sq_pause', 4, 2, [0.75, 0.80]), e('sq_back', 2, 6, [0.70, 0.70]),
+            e('ext_ecc', 3, '5 je Bein'), e('calf_seat', 3, 8), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), TEST, e('broad', 4, 4), e('hpc', 5, 2, [0.80, 0.825]), e('rdl', 3, 5, [0.75, 0.775]),
+            e('hip', 3, 6, [0.80, 0.80]), e('hold_lp', 3, '4 × 3 s je Bein'), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 3, [0.80, 0.825], { bench: '6', pull: '4' }),
+        S: [e('timer', 1, '', null, { min: [5, 10, 5] })]
+      } },
+    C2: { t: 'Kraft → Power II', col: '#fb923c', int: '80–90', cap: { all: 52, hi: 32 }, reach: true,
+      f: 'Doubles + Single 88–90 % · kurze Kontakte nach 3 Wochen Grün',
+      key: 'Kurze Kontakte (niedrige Hürden, Double-Dip) gibt es erst nach drei Wochen durchgehend Grün — sonst zeigt die App automatisch die Variante mit langem Kontakt. Der Top-Single bleibt schnell; wird er langsam, ist Schluss. In W3 Reach-Test in der Sprung-Session.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('pogo', 2, 10), e('hurdle', 4, 4), e('sq_pause', 3, 2, [0.80, 0.80]), e('sq_single', 1, 1, [0.88, 0.90], { w: W12 }),
+            e('sq_back', 2, 6, [0.70, 0.70]), e('ext_ecc', 3, '5 je Bein'), e('calf_seat', 3, 8), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), TEST, e('ddip', 4, 4), e('hpc', 5, 2, [0.825, 0.85]), e('rdl', 3, 5, [0.775, 0.80]),
+            e('hip', 3, 6, [0.80, 0.825]), e('hold_lp', 3, '4 × 3 s je Bein'), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 3, [0.825, 0.85], { bench: '6', pull: '4' }),
+        S: [e('reach', 3, '1 Versuch', null, { w: W3 }), e('timer', 1, '', null, { min: [15, 20, 10] })]
+      } },
+    C3: { t: 'Kraft → Power III', col: '#f472b6', int: '80–93', cap: { all: 52, hi: 32 },
+      f: 'Single 90–93 % · Depth Jump 30 cm bei Grün · Session 20 min',
+      key: 'Höchste Intensität des Zyklus bei niedrigen Sprungzahlen: zwei Varianten à 3–4 × 4. Depth Jumps nur von 30 cm und nur bei Grün. Fällt der Standsprung um 5 % oder mehr, Zyklus abbrechen und eine Entlastungswoche einschieben.',
+      days: {
+        A: [e('iso_sp', 2, '30 s'), e('pogo', 2, 10), e('hurdle', 4, 4), e('sq_pause', 2, 2, [0.80, 0.825]), e('sq_single', 1, 1, [0.90, 0.93], { w: W12 }),
+            e('sq_back', 2, 6, [0.70, 0.70]), e('ext_ecc', 3, '5 je Bein'), e('calf_seat', 3, 8), e('calf_sl', 3, '10 je Seite'), e('abd', 3, '15 je Seite')],
+        B: [e('iso_sp', 2, '30 s'), TEST, e('depth', 3, 4), e('hpc', 4, 2, [0.85, 0.85]), e('rdl', 3, 5, [0.80, 0.80]),
+            e('hip', 3, 5, [0.825, 0.825]), e('hold_lp', 3, '4 × 3 s je Bein'), e('nordic', 3, 5), e('copen', 3, '20 s je Seite')],
+        C: dayC(4, 3, [0.85, 0.875], { bench: '6', pull: '4' }),
+        S: [e('timer', 1, '', null, { min: [20, 20, 10] })]
+      } },
+    D: { t: 'Test & Übergang', col: '#a78bfa', int: '80–85', cap: { all: 32, hi: 12 }, wl: ['Taper', 'Test', 'Übergang'],
+      f: 'Taper · Tests in W2 · lockerer Übergang',
+      key: 'W1 Taper: Volumen runter, Last bleibt. W2 Tests: Standsprung, Reach, 3RM in Kniebeuge und Hang Power Clean — nur bei Grün. W3 Übergang: locker. Danach planen wir mit deinen Testwerten den nächsten Zyklus.',
+      weeks: [
+        { A: [e('iso_sp', 2, '30 s'), e('pogo', 2, 10), e('sj', 3, 4), e('sq', 3, 3, 0.85), e('ext_hsr', 2, '8 je Bein'),
+              e('calf_seat', 2, 8), e('calf_sl', 2, '10 je Seite'), e('abd', 2, '15 je Seite')],
+          B: [e('iso_sp', 2, '30 s'), e('hpc', 3, 2, 0.85), e('rdl', 2, 5, 0.75), e('hip', 2, 6, 0.80), e('hold_lp', 3, '4 × 3 s je Bein'), e('nordic', 2, 5)],
+          C: dayCLight(3, 3, 0.80),
+          S: [e('timer', 1, '', null, { min: [10, 10, 10] })] },
+        { A: [e('iso_sp', 2, '30 s'), e('pogo', 2, 10), e('sjtest', 3, '1 Versuch'),
+              e('sq_3rm', 1, '3RM', null, { c: 'Nur bei Grün. In Stufen aufwärmen, dann das Gewicht für genau 3 saubere Wiederholungen suchen, höchstens 3 Anläufe. Bei Gelb oder Rot: stattdessen 3×3 bei 80 %. Das e1RM kannst du direkt als neues 1RM übernehmen.' }),
+              e('calf_seat', 2, 8), e('abd', 2, '15 je Seite')],
+          B: [e('iso_sp', 2, '30 s'),
+              e('hpc_3rm', 1, '3RM', null, { c: 'Nur bei Grün. In Stufen steigern, die Technik muss schnell bleiben. Bei Gelb oder Rot: 3×2 bei 75 %.' }),
+              e('rdl', 2, 5, 0.75), e('hip', 2, 6, 0.80), e('nordic', 2, 5)],
+          C: dayCLight(3, 3, 0.80),
+          S: [e('reach', 3, '1 Versuch')] },
+        { A: [e('iso_sp', 2, '30 s'), e('sq_hsr', 2, 6, 0.70), e('ext_hsr', 2, '8 je Bein'), e('calf_seat', 2, 10), e('abd', 2, '15 je Seite')],
+          B: [e('iso_sp', 2, '30 s'), e('hpc', 3, 2, 0.75), e('rdl', 2, 5, 0.70), e('hip', 2, 8, 0.70), e('nordic', 2, 5)],
+          C: dayCLight(3, 5, 0.70),
+          S: [] }
+      ] }
+  };
+  const DAYN = { A: 'Gym A · Schwer & langsam', B: 'Gym B · Schnell & Hüfte', C: 'Tag C · Oberkörper & Knie', S: 'Sprung-Session' };
+  const DAYS = { A: 'Gym A', B: 'Gym B', C: 'Tag C', S: 'Sprung' };
+  const FIELDS = {
+    lift: [['kg', 'kg', 'decimal'], ['reps', 'Wdh', 'numeric'], ['rpe', 'RPE', 'decimal']],
+    iso: [['kg', 'Last kg', 'decimal'], ['sec', 'Sek', 'numeric'], ['pain', 'Schmerz', 'decimal']],
+    hold: [['kg', 'kg', 'decimal'], ['reps', 'Wdh', 'numeric'], ['pain', 'Schmerz', 'decimal']],
+    test: [['cm', 'cm', 'decimal']],
+    timer: [['jumps', 'Sprünge', 'numeric'], ['pain', 'Schmerz max', 'decimal']]
+  };
+
+  /* ---------- Kalender ---------- */
+  function seq() {
+    const rep = cfg().rep || {};
+    const out = [];
+    ORDER.forEach(code => {
+      const n = 1 + Math.max(0, Math.min(5, rep[code] | 0));
+      for (let o = 0; o < n; o++) out.push({ code: code, occ: o, ns: o ? code + '~' + o : code });
+    });
+    return out;
+  }
+  function startD() {
+    const s = parseD(cfg().start);
+    if (s) return s;
+    const sd = parseD(DB.settings && DB.settings.startDate);
+    if (sd) return addD(sd, 168);
+    const t = today();
+    return addD(t, ((8 - t.getDay()) % 7) || 7);
+  }
+  // Saisonende = letzter Tag der Saison (inklusive); Standard: 13 Wochen nach dem Start
+  const seasonEndD = () => parseD(cfg().seasonEnd) || addD(startD(), 90);
+  const inSeason = ws => ws <= seasonEndD();
+  const weekStartOf = (i, wi) => addD(startD(), (i * 3 + wi) * 7);
+  const dayDate = (ws, dk) => addD(ws, ((cfg().sched[dk] - ws.getDay()) + 7) % 7);
+  function pos(d) {
+    const st = startD(), sq = seq(), total = sq.length * 3;
+    const days = diffD(d, st);
+    if (days < 0) return { state: 'pre', days: -days, total: total, start: st };
+    const wk = Math.floor(days / 7);
+    if (wk >= total) return { state: 'done', total: total, start: st, wk: total - 1 };
+    const i = Math.floor(wk / 3), wi = wk % 3;
+    return { state: 'run', wk: wk, i: i, wi: wi, total: total, start: st, meso: sq[i], weekStart: addD(st, wk * 7) };
+  }
+  const weekLabels = code => MZ[code].wl || ['Aufbau', 'Aufbau+', 'Entlastung'];
+
+  /* ---------- Knie-Ampel ---------- */
+  const AC = new Map();
+  const acClear = () => AC.clear();
+  function mval(ds) {
+    const v = kneeStore()[ds];
+    if (!v) return null;
+    const l = num(v.l), r = num(v.r);
+    if (l == null && r == null) return null;
+    return Math.max(l == null ? 0 : l, r == null ? 0 : r);
+  }
+  function sval(ds) {
+    const v = cfg().sess[ds];
+    if (!v) return null;
+    const p = num(v.p);
+    if (p == null && !v.warm) return null;
+    return { p: p, warm: v.warm || '' };
+  }
+  function normalFor(d) {
+    const w = [];
+    for (let i = 3; i <= 16; i++) { const v = mval(isoD(addD(d, -i))); if (v != null) w.push(v); }
+    if (w.length >= 3) {
+      w.sort((a, b) => a - b);
+      const m = w.length >> 1;
+      return w.length % 2 ? w[m] : (w[m - 1] + w[m]) / 2;
+    }
+    const all = [];
+    for (let i = 1; i <= 60; i++) { const v = mval(isoD(addD(d, -i))); if (v != null) all.push(v); }
+    return all.length ? Math.min.apply(null, all) : 2;
+  }
+  function dayStatus(d) {
+    const ds = isoD(d);
+    if (AC.has(ds)) return AC.get(ds);
+    const m = mval(ds), s = sval(ds);
+    let r;
+    if (m == null && !s) r = { st: 'none', why: [], m: null, s: null, nrm: null };
+    else {
+      const nrm = normalFor(d), why = [];
+      let st = 'green';
+      if (s && s.p != null && s.p >= 4) { st = 'red'; why.push('Schmerz ' + fmtN(s.p) + '/10 im Training'); }
+      if (m != null && m >= nrm + 2) {
+        const m1 = mval(isoD(addD(d, -1))), m2 = mval(isoD(addD(d, -2)));
+        if (m1 != null && m2 != null && m1 >= nrm + 2 && m2 >= nrm + 2) { st = 'red'; why.push('Morgenwert seit über 48 h mindestens 2 über normal'); }
+      }
+      if (st !== 'red') {
+        if (s && s.p != null && s.p >= 3) { st = 'yellow'; why.push('Schmerz ' + fmtN(s.p) + '/10 im Training'); }
+        if (s && s.warm === 'no') { st = 'yellow'; why.push('Aufwärmen wurde nicht besser'); }
+        if (m != null && m >= nrm + 1) { st = 'yellow'; why.push('Morgenwert ' + fmtN(m) + ' über deinem Normalwert ' + fmtN(nrm)); }
+        else if (m != null && m >= 5) { st = 'yellow'; why.push('Morgenwert ' + fmtN(m) + ' ist hoch — mit Arzt oder Physio abklären'); }
+      }
+      if (st === 'green') {
+        const tr = s && s.p != null ? 'Training ' + fmtN(s.p) + '/10' : (s && s.warm === 'ok' ? 'Aufwärmen besser oder schmerzfrei' : '');
+        why.push(m != null ? 'Morgenwert ' + fmtN(m) + ' im Normalbereich' + (tr ? ', ' + tr : '') : tr);
+      }
+      r = { st: st, why: why, m: m, s: s, nrm: nrm };
+    }
+    AC.set(ds, r);
+    return r;
+  }
+  function ampelNow() {
+    const t = today();
+    const r = dayStatus(t);
+    if (r.st !== 'none') return Object.assign({ from: 'heute' }, r);
+    const y = dayStatus(addD(t, -1));
+    if (y.st !== 'none') return Object.assign({ from: 'gestern' }, y);
+    return Object.assign({ from: '' }, r);
+  }
+  const LBL = { green: 'Grün', yellow: 'Gelb', red: 'Rot', none: 'Keine Daten' };
+  const ACT = {
+    green: 'Plan fahren. Nach der Entlastungswoche steigern.',
+    yellow: 'Übung anpassen: weniger Tiefe, leichter, langsamer. Gym-Sprünge heute streichen. In der Halle den Sprungteil bei 3/10 beenden.',
+    red: 'Eine Woche zurück auf die Inhalte von Phase A, Gym-Sprünge null, Hallensprünge wenn möglich reduzieren.',
+    none: 'Trag morgens den Check ein (5 einbeinige Kniebeugen bis etwa 60°) oder nach dem Training den Schmerz.'
+  };
+
+  /* ---------- Übergänge ---------- */
+  function gateG1() {
+    const t = today(), c = cfg();
+    let n = 0, mx = 0;
+    for (let i = 0; i < 7; i++) { const v = mval(isoD(addD(t, -i))); if (v != null) { n++; mx = Math.max(mx, v); } }
+    const keys = Object.keys(c.sess).filter(k => k <= isoD(t) && num(c.sess[k].p) != null).sort().slice(-3);
+    const ps = keys.map(k => num(c.sess[k].p));
+    const items = [
+      { ok: n >= 5 && mx <= 2, t: 'Sieben Tage Morgen-Check bis 2', d: n + ' von 7 Tagen eingetragen' + (n ? ' · höchster Wert ' + fmtN(mx) : '') },
+      { ok: ps.length > 0 && Math.max.apply(null, ps) <= 2, t: 'Heavy-Slow und Training bis 2/10', d: ps.length ? 'letzte ' + ps.length + ' Einheiten: ' + ps.map(fmtN).join(' · ') : 'noch kein Trainingsschmerz eingetragen' },
+      { ok: !!c.gates.g1x, t: 'Keine Reaktion über 48 h nach Halle oder Spiel', d: 'selbst bestätigen', chk: 'g1x' }
+    ];
+    return { items: items, ok: items.every(x => x.ok) };
+  }
+  function gateG2() {
+    const c = cfg(), sq = seq();
+    let weeks = 0;
+    sq.forEach(m => {
+      if (m.code[0] !== 'B') return;
+      for (let wi = 0; wi < 3; wi++) {
+        const pre = 'z2:' + m.ns + ':A:' + wi + ':';
+        const hit = Object.keys(DB.training.done).some(k => DB.training.done[k] && k.indexOf(pre) === 0 && /:(sq_hsr|sq_3rm):\d+$/.test(k));
+        if (hit) weeks++;
+      }
+    });
+    let red = 0;
+    for (let i = 0; i < 21; i++) if (dayStatus(addD(today(), -i)).st === 'red') red++;
+    const g = c.gates;
+    const sl = num(g.slds_l), sr = num(g.slds_r), el = num(g.ext_l), er = num(g.ext_r);
+    const diff = (el != null && er != null && Math.max(el, er) > 0) ? Math.abs(el - er) / Math.max(el, er) * 100 : null;
+    const items = [
+      { ok: weeks >= 8, t: 'Neun Wochen Heavy-Slow absolviert', d: weeks + ' von 9 Wochen mit Kniebeuge an Tag A abgehakt (8 reichen)' },
+      { ok: red === 0, t: 'Drei Wochen ohne roten Tag', d: red ? red + ' rote Tage in den letzten 21 Tagen' : 'kein roter Tag in den letzten 21 Tagen' },
+      { ok: sl != null && sr != null && sl <= 1 && sr <= 1, t: 'Einbeinige Kniebeuge auf dem Schrägbrett bis 1/10', d: 'Brett etwa 25° (Ferse hoch), bis ~60° beugen — Schmerz je Bein', inp: [['slds_l', 'Links 0–10'], ['slds_r', 'Rechts 0–10']] },
+      { ok: diff != null && diff <= 10, t: 'Beinstrecker links/rechts höchstens 10 % auseinander', d: diff != null ? 'Unterschied ' + fmtN(diff) + ' %' : 'Arbeitsgewicht je Seite eintragen', inp: [['ext_l', 'Links kg'], ['ext_r', 'Rechts kg']] }
+    ];
+    return { items: items, ok: items.every(x => x.ok) };
+  }
+  function gateG3(d) {
+    let bad = 0, data = 0;
+    for (let i = 0; i < 21; i++) {
+      const r = dayStatus(addD(d, -i));
+      if (r.st === 'none') continue;
+      data++;
+      if (r.st !== 'green') bad++;
+    }
+    return { ok: bad === 0 && data >= 6, bad: bad, data: data };
+  }
+
+  /* ---------- Tagesinhalt ---------- */
+  function dayItems(code, wi, dk, evalD) {
+    const M = MZ[code];
+    const raw = M.weeks ? ((M.weeks[wi] || {})[dk] || []) : ((M.days[dk] || []).filter(sp => !sp.w || sp.w[wi]));
+    let g3 = null;
+    return raw.map(sp => {
+      let id = sp.id, L = LIB[id], altOf = null;
+      if (L.gate === 'g3') {
+        if (g3 == null) g3 = gateG3(evalD || today()).ok;
+        if (!g3) { altOf = id; id = L.alt; L = LIB[id]; }
+      }
+      let sets = sp.sets;
+      const pct = Array.isArray(sp.pct) ? sp.pct[Math.min(wi, 1)] : sp.pct;
+      if (!M.weeks && wi === 2) {
+        if (L.k === 'iso') sets = Math.max(2, sets - 1);
+        else if (L.k !== 'test' && L.k !== 'timer') sets = Math.max(1, Math.round(sets * 0.6));
+      }
+      return {
+        k: id, id: id, L: L, altOf: altOf, sets: sets, reps: sp.reps, pct: pct,
+        n: altOf ? L.n : (sp.n || L.n), c: altOf ? L.c : (sp.c || L.c), tempo: sp.tempo != null ? sp.tempo : L.tempo,
+        minutes: sp.min ? sp.min[wi] : null
+      };
+    });
+  }
+  function gymContacts(code, wi, evalD) {
+    let all = 0, hi = 0, test = 0;
+    ['A', 'B', 'C'].forEach(dk => dayItems(code, wi, dk, evalD).forEach(it => {
+      if (it.L.k === 'plyo') { const n = it.sets * (parseInt(it.reps, 10) || 0); all += n; if (it.L.hi) hi += n; }
+      else if (it.id === 'sjtest') test += it.sets;
+    }));
+    return { all: all, hi: hi, test: test };
+  }
+  function showS(code, wi, ws, evalD) {
+    return !inSeason(ws) && dayItems(code, wi, 'S', evalD).length > 0;
+  }
+
+  /* ---------- Zustand ---------- */
+  const MZS = { macro: null, mi: null, wi: 0, di: null };
+  let CTX = null;
+  let KSEL = null;
+  const TIMER = { key: '', total: 0, left: 0, run: false, endAt: 0, iv: null };
+  const defaultMacro = () => (pos(today()).state === 'pre' ? 'mz1' : 'mz2');
+
+  /* ---------- Bausteine ---------- */
+  const ampPill = (st, extra) => '<span class="mz-amp ' + st + '">' + (extra || '') + LBL[st] + '</span>';
+  function stripHTML(endD) {
+    let h = '';
+    for (let i = 20; i >= 0; i--) {
+      const d = addD(endD, -i), r = dayStatus(d);
+      h += '<i class="' + r.st + (i === 0 ? ' now' : '') + '" title="' + fmtWD(d) + ': ' + LBL[r.st] + '"></i>';
+    }
+    return '<div class="mz-strip">' + h + '</div><div class="mz-strip-l"><span>vor 3 Wochen</span><span>heute</span></div>';
+  }
+  function ampLiveHTML() {
+    const a = ampelNow();
+    const nrm = normalFor(today());
+    const src = a.from === 'gestern' ? ' (Stand gestern)' : '';
+    return '<div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">'
+      + ampPill(a.st, 'Knie-Ampel: ')
+      + '<span style="font-size:11px;color:var(--muted);font-weight:700">Normalwert morgens ' + fmtN(nrm) + '</span></div>'
+      + (a.why && a.why.length ? '<div class="mz-why">' + E(a.why.join(' · ') + src) + '</div>' : '')
+      + '<div class="mz-act">' + E(ACT[a.st]) + '</div>'
+      + stripHTML(today());
+  }
+  function kneeInputsHTML(ds, withDate) {
+    const k = kneeStore()[ds] || {}, s = cfg().sess[ds] || {};
+    return '<div data-mzkd="' + E(ds) + '">'
+      + (withDate ? '<div class="jgrid dates" style="margin-top:12px"><div class="jfield"><label>Datum</label><input type="date" data-mzk="date" value="' + E(ds) + '"></div></div>' : '')
+      + '<div class="mz-sub">Morgen-Check · 5 einbeinige Kniebeugen bis ~60°</div>'
+      + '<div class="jgrid">'
+      + '<div class="jfield"><label>Links 0–10</label><input type="number" inputmode="decimal" min="0" max="10" data-mzk="l" value="' + E(k.l || '') + '" placeholder="–"></div>'
+      + '<div class="jfield"><label>Rechts 0–10</label><input type="number" inputmode="decimal" min="0" max="10" data-mzk="r" value="' + E(k.r || '') + '" placeholder="–"></div>'
+      + '<div class="jfield note"><label>Notiz</label><input type="text" data-mzk="n" value="' + E(k.n || '') + '" placeholder="Schlaf, Halle …"></div>'
+      + '</div>'
+      + '<div class="mz-sub">Training (Gym, Halle oder Spiel)</div>'
+      + '<div class="jgrid" style="grid-template-columns:1fr 2fr">'
+      + '<div class="jfield"><label>Schmerz max</label><input type="number" inputmode="decimal" min="0" max="10" data-mzk="p" value="' + E(s.p || '') + '" placeholder="0–10"></div>'
+      + '<div class="jfield"><label>Aufwärmen</label><div class="mz-warm">'
+      + '<button class="' + (s.warm === 'ok' ? 'on' : '') + '" data-mzwarm="ok">besser / frei</button>'
+      + '<button class="' + (s.warm === 'no' ? 'on' : '') + '" data-mzwarm="no">nicht besser</button></div></div>'
+      + '</div></div>';
+  }
+  function kneeCardHTML() { return '<div class="section-eyebrow">Knie-Ampel</div>' + kneeCardInner(); }
+  function kneeCardInner() {
+    if (!KSEL) KSEL = isoD(today());
+    return '<div class="card block-card" id="mz-knee" style="border-left:4px solid ' + ampColor(ampelNow().st) + '">'
+      + '<div id="mz-amp-live">' + ampLiveHTML() + '</div>'
+      + kneeInputsHTML(KSEL, true)
+      + '<div class="mz-note">Im Kraftraum bis 2/10, Maximalsprünge nur schmerzfrei, in der Halle den Sprungteil bei 3/10 beenden. Entscheidend ist der Stand nach 48 h. Schwellung, Blockieren, Wegknicken oder Ruheschmerz gehören nicht in die Ampel, sondern zum Arzt.</div>'
+      + '</div>';
+  }
+  const ampColor = st => ({ green: 'var(--good)', yellow: '#fbbf24', red: 'var(--bad)', none: 'var(--line2)' }[st]);
+  function refreshKneeLive() {
+    acClear();
+    const live = document.getElementById('mz-amp-live');
+    if (live) live.innerHTML = ampLiveHTML();
+    const card = document.getElementById('mz-knee');
+    if (card) card.style.borderLeftColor = ampColor(ampelNow().st);
+    const mini = document.getElementById('mz-amp-mini');
+    if (mini) mini.innerHTML = miniAmpHTML();
+  }
+
+  function timelineHTML(p) {
+    const sq = seq();
+    const segs = sq.map((m, i) => {
+      const cls = p.state === 'run' && p.i === i ? 'on' : ((p.state === 'done' || (p.state === 'run' && i < p.i)) ? 'past' : '');
+      return '<div class="seg ' + cls + '" style="background:' + MZ[m.code].col + ';color:' + MZ[m.code].col + '"></div>';
+    }).join('');
+    const lbls = sq.map(m => '<span>' + E(m.code) + (m.occ ? '+' : '') + '</span>').join('');
+    const total = sq.length * 21, se = seasonEndD(), st = startD();
+    const pct = Math.max(0, Math.min(100, (diffD(se, st) + 1) / total * 100));
+    return '<div class="mz-tl">' + segs + '</div><div class="mz-tll">' + lbls + '</div>'
+      + '<div class="mz-season"><b style="width:' + pct.toFixed(1) + '%"></b></div>'
+      + '<div class="mz-sl"><span>Saison bis ' + fmtD(se) + '</span><span>Off-Season</span></div>';
+  }
+  function heroHTML(p) {
+    const sq = seq();
+    let sub, meta;
+    if (p.state === 'run') {
+      const M = MZ[p.meso.code];
+      sub = p.meso.code + (p.meso.occ ? ' (Wiederholung)' : '') + ' · ' + weekLabels(p.meso.code)[p.wi] + ' · ' + (inSeason(p.weekStart) ? 'Saison' : 'Off-Season');
+      meta = [['W' + (p.wk + 1), 'von ' + p.total], [p.meso.code, 'Block'], [String(gymContacts(p.meso.code, p.wi, today()).all), 'Gym-Kontakte/Wo']];
+    } else {
+      sub = 'Abgeschlossen · Tests im Sprung-Tab';
+      meta = [[String(sq.length * 3), 'Wochen'], [String(sq.length), 'Blöcke'], ['✓', 'fertig']];
+    }
+    return '<div class="hero stagger-item" id="mz-hero">'
+      + '<div class="court">🏐</div>'
+      + '<h2>Makrozyklus 2<br>Sehne → Power</h2>'
+      + '<div class="sub">' + E(sub) + '</div>'
+      + '<div class="mz-hm">' + meta.map(x => '<div><div class="v">' + E(x[0]) + '</div><div class="k">' + E(x[1]) + '</div></div>').join('') + '</div>'
+      + timelineHTML(p)
+      + '</div>';
+  }
+  function freeDayText(t, p) {
+    const c = cfg(), tm = addD(t, 1);
+    const season = p.state === 'run' && inSeason(p.weekStart);
+    const tomorrowHard = season && (c.match === tm.getDay() || c.hall.indexOf(tm.getDay()) >= 0);
+    if (p.state === 'run' && p.meso.code === 'A') return 'Isometrie 5×45 s (Phase A: täglich), sonst Erholung.';
+    if (tomorrowHard) return 'Isometrie 3×30 s und Mobilität — morgen ist ' + (c.match === tm.getDay() ? 'Spiel' : 'Halle') + '.';
+    return t.getDay() === 0 ? 'Keine Belastung — Erholung.' : 'Optional Isometrie 5×45 s, sonst Erholung.';
+  }
+  function nextSession(t, p) {
+    for (let k = 1; k <= 14; k++) {
+      const d = addD(t, k), q = pos(d);
+      if (q.state !== 'run') continue;
+      const dks = ['C', 'A', 'B', 'S'].filter(dk => cfg().sched[dk] === d.getDay() && (dk !== 'S' || showS(q.meso.code, q.wi, q.weekStart, d)));
+      if (dks.length) return fmtWD(d) + ' · ' + dks.map(x => DAYS[x]).join(' + ');
+    }
+    return '';
+  }
+  function todayHTML(p) {
+    const t = today(), c = cfg();
+    if (p.state === 'done') {
+      return '<div class="card block-card"><span class="tag" style="background:#a78bfa">MZ2 · FERTIG</span><h3>Makrozyklus 2 abgeschlossen</h3>'
+        + '<div class="ph">Vergleiche die Tests im Sprung-Tab und plane mit diesen Werten den nächsten Zyklus.</div>'
+        + '<div style="margin-top:13px"><button class="btn ghost" data-nav="jump">Tests ansehen</button></div></div>';
+    }
+    const code = p.meso.code, M = MZ[code], dow = t.getDay(), season = inSeason(p.weekStart);
+    const gyms = ['C', 'A', 'B', 'S'].filter(dk => c.sched[dk] === dow && (dk !== 'S' || showS(code, p.wi, p.weekStart, t)));
+    const hall = season && c.hall.indexOf(dow) >= 0, match = season && c.match === dow;
+    let rows = '';
+    gyms.forEach(dk => {
+      rows += '<div class="mz-row"><div class="ico">🏋️</div><div style="flex:1"><b>' + E(DAYN[dk]) + '</b>'
+        + '<small>' + E(code + ' · W' + (p.wi + 1) + ' ' + weekLabels(code)[p.wi]) + (hall ? ' · Gym zuerst, mehrere Stunden vor der Halle' : '') + '</small>'
+        + '<div style="margin-top:9px"><button class="btn" data-mzopen="' + p.i + ':' + p.wi + ':' + dk + '">Einheit öffnen</button></div></div></div>';
+    });
+    if (hall) rows += '<div class="mz-row"><div class="ico">🏐</div><div><b>Halle</b><small>Isometrie 2×30 s als Aufwärmtest, 20 min aufwärmen, über die Hüfte landen. Sprungteil bei 3/10 beenden.</small></div></div>';
+    if (match) rows += '<div class="mz-row"><div class="ico">🏆</div><div><b>Spiel</b><small>Aufwärmen mit Isometrie 2×30 s. Nach einem Doppelspieltag wird die Folgewoche zur Entlastung.</small></div></div>';
+    if (!rows) rows = '<div class="mz-row"><div class="ico">🌙</div><div><b>Frei</b><small>' + E(freeDayText(t, p)) + '</small></div></div>';
+    const nx = nextSession(t, p);
+    return '<div class="card block-card" id="mz-today">'
+      + '<span class="tag" style="background:' + M.col + '">' + E(code) + ' · W' + (p.wi + 1) + ' · HEUTE ' + E(fmtWD(t)) + '</span>'
+      + rows
+      + (nx ? '<div class="mz-note" style="margin-top:6px">Nächste Einheit: ' + E(nx) + '</div>' : '')
+      + '</div>';
+  }
+  function teaserHTML(p) {
+    const st = startD(), noStart = !(DB.settings && DB.settings.startDate) && !cfg().start;
+    return '<div class="card block-card" id="mz-teaser" style="border-left:4px solid #2dd4bf">'
+      + '<span class="tag" style="background:#2dd4bf">MZ2 · AB ' + E(fmtD(st)) + '</span>'
+      + '<h3>Makrozyklus 2: Sehne → Power</h3>'
+      + '<div class="ph">' + (noStart ? 'Startet nach MZ1 — trag oben dein MZ1-Startdatum ein.' : 'Startet nach M6 am ' + E(fmtWD(st)) + ' (' + inDays(p.days) + '). 3-Wochen-Zyklen, die ersten 13 Wochen in der Saison, dann Off-Season mit Sprung-Session.') + '</div>'
+      + '<div style="margin-top:13px"><button class="btn ghost" data-mzgo="list">Plan ansehen</button></div></div>';
+  }
+  function gateCardHTML(which, opts) {
+    opts = opts || {};
+    const c = cfg();
+    let title, g, intro, repCode = opts.repCode || null;
+    if (which === 'g1') { g = gateG1(); title = 'Übergang A → B'; intro = 'Weiter zu Heavy-Slow, wenn alle Punkte erfüllt sind. Sonst Phase A wiederholen.'; }
+    else if (which === 'g2') { g = gateG2(); title = 'Übergang B → C'; intro = 'Erst dann kommen Pause-Squats, Exzentrik und Sprung-Varianten dazu. Sonst B3 wiederholen.'; }
+    else {
+      const r = gateG3(opts.evalD || today());
+      g = { ok: r.ok, items: [{ ok: r.ok, t: 'Drei Wochen durchgehend Grün', d: r.data + ' Tage mit Daten in 21 Tagen · ' + (r.bad ? r.bad + ' davon Gelb oder Rot' : 'alle Grün') + ' (mindestens 6 nötig)' }] };
+      title = 'Kurze Kontakte (C2, C3)';
+      intro = r.ok ? 'Freigegeben: Hürden, Double-Dip und Depth Jump erscheinen im Plan.' : 'Noch gesperrt: Die App zeigt stattdessen Sprünge mit langem Kontakt. Wird es bis Ende C1 nichts, C1 wiederholen.';
+    }
+    const conf = c.gates[which];
+    let li = g.items.map(x => {
+      let extra = '';
+      if (x.chk) extra = '<label class="mz-chk"><input type="checkbox" data-mzgchk="' + x.chk + '"' + (c.gates[x.chk] ? ' checked' : '') + '> trifft zu</label>';
+      if (x.inp) extra = '<div class="jgrid" style="grid-template-columns:1fr 1fr;margin-top:7px">' + x.inp.map(f => '<div class="jfield"><label>' + f[1] + '</label><input type="number" inputmode="decimal" data-mzgin="' + f[0] + '" value="' + E(c.gates[f[0]] || '') + '" placeholder="–"></div>').join('') + '</div>';
+      return '<li><span class="ic ' + (x.ok ? 'ok' : 'no') + '">' + (x.ok ? '✓' : '') + '</span><div style="flex:1">' + E(x.t) + '<small>' + E(x.d) + '</small>' + extra + '</div></li>';
+    }).join('');
+    let btns = '';
+    if (which !== 'g3') {
+      btns = conf
+        ? '<div class="mz-done-tag">✓ Übergang bestätigt am ' + E(fmtD(parseD(conf) || today())) + ' · <button class="reset-link" data-mzgate="unconfirm:' + which + '">zurücknehmen</button></div>'
+        : '<div class="mz-btnrow"><button class="btn' + (g.ok ? '' : ' ghost') + '" data-mzgate="confirm:' + which + '">Übergang bestätigen</button>'
+          + (repCode && !g.ok ? '<button class="btn ghost" data-mzgate="repeat:' + repCode + '">' + E(repCode) + ' wiederholen</button>' : '') + '</div>';
+    } else if (repCode && !g.ok) {
+      btns = '<div class="mz-btnrow"><button class="btn ghost" data-mzgate="repeat:' + repCode + '">' + E(repCode) + ' wiederholen</button></div>';
+    }
+    return '<div class="card block-card mz-gate" id="mz-gate-' + which + '" data-rep="' + (repCode || '') + '" style="border-left:4px solid ' + (g.ok ? 'var(--good)' : '#fbbf24') + '">'
+      + '<span class="tag" style="background:' + (g.ok ? 'var(--good)' : '#fbbf24') + '">' + (g.ok ? 'ERFÜLLT' : 'OFFEN') + '</span>'
+      + '<h3>' + E(title) + '</h3><div class="ph">' + E(intro) + '</div><ul>' + li + '</ul>' + btns + '</div>';
+  }
+  function gateReminderHTML(p) {
+    if (p.state !== 'run') return '';
+    const code = p.meso.code, c = cfg();
+    if (code === 'A' && p.wi === 2) return gateCardHTML('g1', { repCode: 'A' });
+    if (code === 'B1' && p.wi === 0 && !c.gates.g1) return gateCardHTML('g1', { repCode: 'A' });
+    if (code === 'B3' && p.wi === 2) return gateCardHTML('g2', { repCode: 'B3' });
+    if (code === 'C1' && p.wi === 0 && !c.gates.g2) return gateCardHTML('g2', { repCode: 'B3' });
+    if (code === 'C1' && p.wi === 2) return gateCardHTML('g3', { repCode: 'C1' });
+    return '';
+  }
+
+  /* ---------- Training: Liste ---------- */
+  function macroSwitch() {
+    const on = MZS.macro;
+    return '<div class="segctl mz-macro">'
+      + '<button class="' + (on === 'mz1' ? 'on' : '') + '" data-mzmacro="mz1" style="' + (on === 'mz1' ? 'background:var(--accent)' : '') + '">MZ1 · Sprungkraft</button>'
+      + '<button class="' + (on === 'mz2' ? 'on' : '') + '" data-mzmacro="mz2" style="' + (on === 'mz2' ? 'background:var(--accent)' : '') + '">MZ2 · Sehne → Power</button>'
+      + '</div>';
+  }
+  function loadOf(dow, season) {
+    const c = cfg();
+    const gymHard = ['A', 'B'].some(dk => c.sched[dk] === dow) || (!season && c.sched.S === dow);
+    const hard = gymHard || (season && (c.hall.indexOf(dow) >= 0 || c.match === dow));
+    if (hard) return 'hi';
+    if (c.sched.C === dow) return 'lo';
+    return 'fr';
+  }
+  function schedWarnings() {
+    const c = cfg(), w = [];
+    [true, false].forEach(season => {
+      const lbl = season ? 'Saison' : 'Off-Season';
+      for (let d = 0; d < 7; d++) {
+        if ([0, 1, 2].every(k => loadOf((d + k) % 7, season) === 'hi')) {
+          w.push(lbl + ': drei harte Tage in Folge (' + WDN[d] + '–' + WDN[(d + 2) % 7] + ').');
+          break;
+        }
+      }
+    });
+    if (c.match != null) {
+      const before = (c.match + 6) % 7;
+      ['A', 'B'].forEach(dk => { if (c.sched[dk] === before) w.push(DAYS[dk] + ' liegt direkt vor dem Spiel — der Tag davor bleibt leicht.'); });
+      ['A', 'B'].forEach(dk => { if (c.sched[dk] === c.match) w.push(DAYS[dk] + ' liegt am Spieltag.'); });
+    }
+    if (c.sched.A === c.sched.B) w.push('Gym A und Gym B am selben Tag.');
+    else if (Math.min((c.sched.A - c.sched.B + 7) % 7, (c.sched.B - c.sched.A + 7) % 7) < 2) w.push('Zwischen Gym A und Gym B liegen weniger als 48 h.');
+    return w;
+  }
+  function schedCardHTML() {
+    const c = cfg(), order = [1, 2, 3, 4, 5, 6, 0];
+    const row = (key, label) => '<div class="l">' + label + '</div>' + order.map(d => {
+      const on = key === 'hall' ? c.hall.indexOf(d) >= 0 : (key === 'match' ? c.match === d : c.sched[key] === d);
+      return '<button class="' + (on ? 'on' : '') + '" data-mzsch="' + key + ':' + d + '" aria-pressed="' + on + '" aria-label="' + label + ' ' + WDN[d] + '">' + (on ? '●' : '') + '</button>';
+    }).join('');
+    const loadRow = season => '<div class="l">Last ' + (season ? 'Saison' : 'Off') + '</div>' + order.map(d => {
+      const L = loadOf(d, season);
+      return '<div class="ld ' + L + '">' + (L === 'hi' ? 'hoch' : (L === 'lo' ? 'leicht' : '–')) + '</div>';
+    }).join('');
+    const w = schedWarnings();
+    return '<div class="card block-card" id="mz-sched">'
+      + '<h3>Wochenplan & Saison</h3>'
+      + '<div class="ph">Tippe die Tage an. Harte Tage bündeln (Gym am Hallentag, Gym zuerst), dazwischen ein leichter Tag.</div>'
+      + '<div class="mz-grid"><div></div>' + order.map(d => '<div class="h">' + WDN[d] + '</div>').join('')
+      + row('A', 'Gym A') + row('B', 'Gym B') + row('C', 'Tag C') + row('S', 'Sprung¹') + row('hall', 'Halle') + row('match', 'Spiel')
+      + loadRow(true) + loadRow(false) + '</div>'
+      + (w.length ? w.map(x => '<div class="mz-warn">⚠️ ' + E(x) + '</div>').join('') : '<div class="mz-good">✓ Keine drei harten Tage in Folge, Tag vor dem Spiel leicht.</div>')
+      + '<div class="mz-note">¹ Sprung-Session nur in der Off-Season — in der Saison sind Halle und Spiel der Sprungreiz. Spiel: erneut tippen = kein fester Spieltag.</div>'
+      + '<div class="jgrid" style="grid-template-columns:1fr 1fr;margin-top:14px">'
+      + '<div class="jfield"><label>Start MZ2</label><input type="date" data-mzcfg="start" value="' + isoD(startD()) + '"></div>'
+      + '<div class="jfield"><label>Letzter Spieltag</label><input type="date" data-mzcfg="seasonEnd" value="' + isoD(seasonEndD()) + '"></div></div>'
+      + '<div class="mz-note">Standard-Start: Ende von MZ1 (Startdatum + 24 Wochen). Standard-Saisonende: 13 Wochen danach. Wochen, die bis zum letzten Spieltag beginnen, zählen als Saison — dort ersetzt das Spiel die Sprung-Session.</div>'
+      + '</div>';
+  }
+  function viewList() {
+    const t = today(), p = pos(t), sq = seq(), se = seasonEndD(), c = cfg();
+    let head;
+    if (p.state === 'pre') head = 'Start ' + fmtWD(startD()) + ' · ' + inDays(p.days);
+    else if (p.state === 'run') head = 'Woche ' + (p.wk + 1) + ' von ' + p.total + ' · ' + p.meso.code + ' läuft';
+    else head = 'Abgeschlossen';
+    const cards = sq.map((m, i) => {
+      const M = MZ[m.code], ws = weekStartOf(i, 0), we = addD(ws, 20);
+      const active = p.state === 'run' && p.i === i;
+      const past = p.state === 'done' || (p.state === 'run' && i < p.i);
+      const sIn = ws <= se, sOut = addD(ws, 20) > se;
+      const chip = sIn && !sOut ? 'Saison' : (!sIn ? 'Off-Season' : 'Saison → Off-Season');
+      const canUndo = m.occ > 0 && m.occ === (c.rep[m.code] | 0) && !(p.state !== 'pre' && (p.state === 'done' || p.i >= i));
+      return '<button class="meso-card" data-mzopen="' + i + '" style="' + (active ? 'border-color:' + M.col : '') + (past ? ';opacity:.72' : '') + '">'
+        + '<div class="bar" style="background:' + M.col + '"></div><div class="body">'
+        + '<div class="meso-badge mz-badge" style="background:' + M.col + '">' + E(m.code) + (m.occ ? '<small>+' + m.occ + '</small>' : '') + '</div>'
+        + '<div style="flex:1;min-width:0"><h3>' + E(M.t) + '</h3>'
+        + '<div class="wk">W' + (i * 3 + 1) + '–' + (i * 3 + 3) + ' · ' + fmtD(ws) + '–' + fmtD(we) + (active ? ' · läuft jetzt' : (past ? ' · vorbei' : '')) + '</div>'
+        + '<div class="desc">' + E(M.f) + '</div>'
+        + '<div class="chiprow"><span class="chip">' + chip + '</span><span class="chip">Gym-Kontakte ≤ ' + M.cap.all + '</span>'
+        + (m.occ ? '<span class="chip">Wiederholung</span>' : '') + '</div>'
+        + (canUndo ? '<div style="margin-top:8px"><span class="reset-link" role="button" data-mzgate="undo:' + m.code + '">Wiederholung zurücknehmen</span></div>' : '')
+        + '</div><div class="intens"><div class="v">' + E(M.int) + '</div><div class="k">%1RM</div></div></div></button>';
+    }).join('');
+    const jump = p.state === 'run'
+      ? '<div style="margin-bottom:14px"><button class="btn" data-mzopen="' + p.i + ':' + p.wi + '">Aktuelle Woche öffnen · ' + E(p.meso.code) + ' W' + (p.wi + 1) + '</button></div>' : '';
+    return macroSwitch()
+      + '<div class="section-eyebrow">Makrozyklus 2 · ' + E(head) + '</div>'
+      + jump
+      + '<div class="stagger">' + cards + '</div>'
+      + schedCardHTML()
+      + '<div class="foot">Long Conjugate · Sehne zuerst · 3-Wochen-Zyklen<br>Gesteuert über die Reaktion der Sehne, nicht über den Kalender</div>';
+  }
+
+  /* ---------- Training: Detail ---------- */
+  function lastFor(exK, curOrd) {
+    let best = null;
+    const sq = seq();
+    const idx = {};
+    sq.forEach((m, i) => { idx[m.ns] = i; });
+    Object.keys(DB.training.log).forEach(k => {
+      if (k.indexOf('z2:') !== 0) return;
+      const pt = k.split(':');
+      if (pt.length !== 6 || pt[4] !== exK || idx[pt[1]] == null) return;
+      const ord = idx[pt[1]] * 3 + (+pt[3]);
+      if (ord >= curOrd) return;
+      const lg = DB.training.log[k] || {}, kg = num(lg.kg);
+      if (kg == null) return;
+      if (!best || ord > best.ord || (ord === best.ord && kg > best.kg)) best = { ord: ord, kg: kg, reps: lg.reps, ns: pt[1], wi: +pt[3] };
+    });
+    return best;
+  }
+  function e1rm(kg, reps) { return reps <= 1 ? kg : kg * (1 + reps / 30); }
+  function summary(it, lg) {
+    lg = lg || {};
+    const k = it.L.k;
+    if (k === 'test') return lg.cm ? E(lg.cm) + ' cm' : '';
+    if (k === 'timer') return [lg.jumps ? E(lg.jumps) + ' Sprünge' : '', lg.pain ? 'Schmerz ' + E(lg.pain) : ''].filter(Boolean).join(' · ');
+    if (k === 'iso') return [lg.kg ? E(lg.kg) + ' kg' : '', lg.sec ? E(lg.sec) + ' s' : '', lg.pain ? 'Schmerz ' + E(lg.pain) : ''].filter(Boolean).join(' · ');
+    const parts = [lg.kg ? E(lg.kg) + ' kg' : '', lg.reps ? '× ' + E(lg.reps) : '', lg.rpe ? 'RPE ' + E(lg.rpe) : '', (k === 'hold' && lg.pain) ? 'Schmerz ' + E(lg.pain) : ''].filter(Boolean);
+    let h = parts.join(' ');
+    const kg = num(lg.kg), reps = num(lg.reps);
+    if (it.L.test && it.L.lift && kg && reps && reps >= 1 && reps <= 10) {
+      const v = Math.round(e1rm(kg, reps) * 2) / 2;
+      const cur = DB.onerm[it.L.lift];
+      const same = cur != null && Math.abs(cur - v) < 0.01;
+      h += ' · e1RM ' + fmtN(v) + ' <button class="mz-rmbtn" data-mzrm="' + it.L.lift + ':' + v + '"' + (same ? ' disabled' : '') + '>' + (same ? '✓ ist 1RM' : '→ als 1RM') + '</button>';
+    }
+    return h;
+  }
+  function setsHTML(it, kbase, col, ph) {
+    const k = it.L.k;
+    let h = '';
+    const inline = k === 'plyo' || k === 'bw';
+    for (let s = 0; s < it.sets; s++) {
+      const key = kbase + ':' + s, on = !!DB.training.done[key], lg = DB.training.log[key] || {};
+      const box = '<button class="setbox ' + (on ? 'done' : '') + '" data-mzset="' + it.k + ':' + s + '" style="' + (on ? 'background:' + col : '') + '">' + (s + 1) + '</button>';
+      if (inline) { h += box; continue; }
+      const fl = FIELDS[k] || FIELDS.lift;
+      h += '<div class="set-item"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">' + box
+        + '<span class="mz-ls" id="mzls-' + it.k + '-' + s + '">' + summary(it, lg) + '</span></div>'
+        + '<div class="set-log-panel" id="mzp-' + it.k + '-' + s + '"><div class="slp-header">' + (k === 'test' ? 'Versuch ' : 'Satz ') + (s + 1) + '</div>'
+        + '<div class="slp-grid" style="grid-template-columns:repeat(' + fl.length + ',1fr)">'
+        + fl.map(f => '<div><label>' + f[1] + '</label><input type="number" inputmode="' + f[2] + '" data-mzlog="' + it.k + ':' + s + ':' + f[0] + '" value="' + E(lg[f[0]] || '') + '" placeholder="' + E((f[0] === 'kg' && ph) ? ph : ((f[0] === 'reps' || f[0] === 'sec') ? String(it.reps).replace(/\s.*$/, '') : '–')) + '"></div>').join('')
+        + '</div></div></div>';
+    }
+    return inline ? '<div class="sets">' + h + '</div>' : '<div class="sets" style="flex-direction:column;align-items:stretch;gap:4px">' + h + '</div>';
+  }
+  const mmss = ms => { const s = Math.ceil(Math.max(0, ms) / 1000); return p2(Math.floor(s / 60)) + ':' + p2(s % 60); };
+  function paintTimer() {
+    const v = document.getElementById('mz-tv');
+    if (v) { v.textContent = mmss(TIMER.left); v.classList.toggle('end', TIMER.left <= 0); }
+    const b = document.getElementById('mz-tgo');
+    if (b) { b.dataset.mztimer = TIMER.run ? 'pause' : 'start'; b.textContent = TIMER.run ? 'Pause' : (TIMER.left <= 0 ? 'Fertig' : 'Start'); }
+  }
+  function timerTick() {
+    if (!TIMER.run) return;
+    TIMER.left = Math.max(0, TIMER.endAt - Date.now());
+    if (TIMER.left <= 0) {
+      TIMER.run = false;
+      clearInterval(TIMER.iv); TIMER.iv = null;
+      try { if (navigator.vibrate) navigator.vibrate([300, 150, 300]); } catch (err) { /* egal */ }
+    }
+    paintTimer();
+  }
+  function cardHTML(it, ctx) {
+    const L = it.L, cat = (typeof CAT_COLOR !== 'undefined' && CAT_COLOR[L.cat]) || '#888';
+    const kbase = 'z2:' + ctx.ns + ':' + ctx.dk + ':' + ctx.wi + ':' + it.k;
+    const kg = (L.lift && it.pct && DB.onerm[L.lift]) ? kgR(DB.onerm[L.lift] * it.pct) : null;
+    const last = (L.k === 'lift' || L.k === 'hold' || L.k === 'iso') ? lastFor(it.k, ctx.ord) : null;
+    const dim = ctx.dimPlyo && (L.k === 'plyo' || L.k === 'test' || L.k === 'timer' || it.k === 'sq_single' || L.test);
+    let tg = '<div class="tg"><div class="k">' + (L.k === 'test' ? 'Versuche' : 'Sätze') + '</div><div class="v">' + it.sets + '</div></div>';
+    if (L.k === 'timer') {
+      tg = '<div class="tg"><div class="k">Dauer</div><div class="v">' + it.minutes + '<small> min</small></div></div><div class="tg"><div class="k">Pause</div><div class="v" style="font-size:14px">voll</div></div>';
+    } else {
+      if (L.k === 'test') tg += '<div class="tg"><div class="k">Wertung</div><div class="v" style="font-size:14px">bester</div></div>';
+      else tg += '<div class="tg"><div class="k">' + (L.k === 'iso' ? 'Zeit' : 'Wdh') + '</div><div class="v" style="font-size:14px">' + E(it.reps) + '</div></div>';
+      if (it.pct) {
+        tg += '<div class="tg"><div class="k">%1RM</div><div class="v" style="font-size:14px">' + fmtN(it.pct * 100) + '%</div></div>';
+        tg += '<div class="tg kg"><div class="k">Ziel kg</div><div class="v">' + (kg != null ? fmtN(kg) : '–') + '<small> kg</small></div></div>';
+      } else if (L.k === 'plyo' || L.k === 'bw') {
+        tg += '<div class="tg"><div class="k">Last</div><div class="v" style="font-size:13px;color:var(--muted)">' + (L.k === 'plyo' ? 'BW' : 'Technik') + '</div></div>';
+      }
+      if (it.tempo) tg += '<div class="tg"><div class="k">Tempo</div><div class="v" style="font-size:13px">' + E(it.tempo) + '</div></div>';
+    }
+    let flags = '';
+    if (it.altOf) flags += '<div class="mz-flag alt">Statt ' + E(LIB[it.altOf].n) + ' — kurze Kontakte erst nach 3 Wochen Grün</div>';
+    if (dim) flags += '<div class="mz-flag skip">Heute streichen — Ampel ' + E(LBL[ctx.amp]) + '</div>';
+    const lastH = last ? '<div class="mz-last">Zuletzt (' + E(last.ns + ' W' + (last.wi + 1)) + '): <b>' + fmtN(last.kg) + ' kg' + (last.reps ? ' × ' + E(last.reps) : '') + '</b></div>' : '';
+    let body;
+    if (L.k === 'timer') {
+      const key = kbase + ':0';
+      const ms = (it.minutes || 0) * 60000;
+      if (!TIMER.run && TIMER.key !== key) { TIMER.key = key; TIMER.total = ms; TIMER.left = ms; }
+      const showLeft = TIMER.key === key ? TIMER.left : ms;
+      body = '<div class="mz-timer"><div class="mz-tv' + (showLeft <= 0 ? ' end' : '') + '" id="mz-tv">' + mmss(showLeft) + '</div>'
+        + '<div class="mz-tb"><button class="btn" id="mz-tgo" data-mztimer="' + (TIMER.run && TIMER.key === key ? 'pause' : 'start') + '">' + (TIMER.run && TIMER.key === key ? 'Pause' : (showLeft <= 0 ? 'Fertig' : 'Start')) + '</button>'
+        + '<button class="btn ghost" data-mztimer="reset">Reset</button></div></div>'
+        + '<div class="cues">' + E(it.c) + '</div>'
+        + setsHTML(it, kbase, ctx.col, null);
+    } else {
+      body = lastH + '<div class="cues">' + E(it.c) + '</div>' + setsHTML(it, kbase, ctx.col, kg != null ? fmtN(kg) : (last ? fmtN(last.kg) : null));
+    }
+    return '<div class="ex' + (dim ? ' mz-dim' : '') + '" style="--cat:' + cat + '">'
+      + '<div class="top"><h4>' + E(it.n) + '</h4><span class="cat-pill">' + E(L.k === 'timer' ? 'Timer' : L.cat) + '</span></div>'
+      + flags + '<div class="targets">' + tg + '</div>' + body + '</div>';
+  }
+  function miniAmpHTML() {
+    const a = ampelNow();
+    return ampPill(a.st, 'Ampel: ') + (a.why && a.why.length ? '<div class="mz-why" style="margin-top:7px">' + E(a.why.join(' · ')) + '</div>' : '')
+      + '<div class="mz-act" style="font-size:12px">' + E(ACT[a.st]) + '</div>';
+  }
+  function progCounts() {
+    if (!CTX) return { total: 0, done: 0 };
+    let total = 0, done = 0;
+    CTX.items.forEach(it => {
+      for (let s = 0; s < it.sets; s++) { total++; if (DB.training.done['z2:' + CTX.ns + ':' + CTX.dk + ':' + CTX.wi + ':' + it.k + ':' + s]) done++; }
+    });
+    return { total: total, done: done };
+  }
+  function updateProg() {
+    const pc = progCounts(), pct = pc.total ? Math.round(pc.done / pc.total * 100) : 0;
+    const f = document.getElementById('mzprogfill'); if (f) f.style.width = pct + '%';
+    const l = document.getElementById('mzproglbl'); if (l) l.textContent = pct + '%';
+    const ft = document.getElementById('mzdayfoot'); if (ft) ft.textContent = pc.done + '/' + pc.total + ' Sätze an diesem Tag erledigt';
+  }
+  function defaultDay(days, ws, isCur) {
+    const c = cfg();
+    if (isCur) {
+      const t = today();
+      for (let k = 0; k < 7; k++) {
+        const d = addD(t, k);
+        if (diffD(d, ws) > 6) break;
+        const hit = days.find(dk => c.sched[dk] === d.getDay());
+        if (hit) return hit;
+      }
+    }
+    return days[0];
+  }
+  function viewDetail() {
+    const sq = seq();
+    const i = Math.max(0, Math.min(MZS.mi, sq.length - 1)), m = sq[i], code = m.code, M = MZ[code];
+    const wi = Math.max(0, Math.min(2, MZS.wi | 0)), col = M.col, c = cfg();
+    const ws = weekStartOf(i, wi), we = addD(ws, 6), t = today();
+    const isCur = t >= ws && t <= we;
+    const evalD = t < we ? t : we;
+    const season = inSeason(ws);
+    const days = ['A', 'B', 'C'].concat(showS(code, wi, ws, evalD) ? ['S'] : []);
+    let dk = MZS.di && days.indexOf(MZS.di) >= 0 ? MZS.di : defaultDay(days, ws, isCur);
+    MZS.di = dk;
+    const items = dayItems(code, wi, dk, evalD);
+    const amp = isCur ? ampelNow().st : 'none';
+    CTX = { ns: m.ns, code: code, dk: dk, wi: wi, col: col, items: items, ord: i * 3 + wi, dimPlyo: isCur && (amp === 'yellow' || amp === 'red'), amp: amp };
+    const wl = weekLabels(code);
+    const weekTabs = wl.map((w, k) => {
+      const d0 = weekStartOf(i, k);
+      return '<button class="' + (k === wi ? 'on' : '') + '" data-mzweek="' + k + '" style="' + (k === wi ? 'background:' + col : '') + '">W' + (k + 1) + '<small>' + E(w) + ' · ' + fmtD(d0) + '</small></button>';
+    }).join('');
+    const dayTabs = days.map(d => '<button class="' + (d === dk ? 'on' : '') + '" data-mzday="' + d + '" style="' + (d === dk ? 'background:' + col : '') + '">' + DAYS[d] + '<small>' + WDN[c.sched[d]] + ' ' + fmtD(dayDate(ws, d)) + '</small></button>').join('');
+    const pc = progCounts(), pct = pc.total ? Math.round(pc.done / pc.total * 100) : 0;
+    const dd = dayDate(ws, dk), dow = dd.getDay(), nextDow = (dow + 1) % 7;
+    let dayInfo = '';
+    if (season && c.hall.indexOf(dow) >= 0) dayInfo += '<div class="mz-note" style="margin:-4px 2px 12px">🏐 Abends Halle — Gym zuerst, mehrere Stunden Abstand.</div>';
+    if (season && c.match === nextDow && dk !== 'C') dayInfo += '<div class="mz-warn" style="margin:-4px 0 12px">⚠️ Morgen ist Spiel — heute leicht halten oder die Einheit verschieben.</div>';
+    const ctc = gymContacts(code, wi, evalD);
+    const over = ctc.all > M.cap.all || ctc.hi > M.cap.hi;
+    const contacts = '<div class="mz-contacts"><span><b class="' + (over ? 'over' : '') + '">' + ctc.all + '</b>Gym-Kontakte diese Woche</span><span><b>' + ctc.hi + '</b>intensiv</span>'
+      + '<span>Obergrenze ' + M.cap.all + (M.cap.hi ? ' / ' + M.cap.hi : '') + '</span>' + (ctc.test ? '<span>+' + ctc.test + ' Testsprünge</span>' : '') + '</div>';
+    const notes = [];
+    if (!M.weeks && wi === 2) notes.push('Entlastungswoche: Sätze rund 40 % weniger, die Last bleibt. Diese Woche Standsprung-Test (Tag B) und VISA-P-Fragebogen — beides im Sprung-Tab.');
+    if (M.reach && wi === 2 && season) notes.push('Diese Woche Reach-Test in der Halle: 3 Anlaufsprünge, der beste zählt — Eintrag im Sprung-Tab.');
+    if (season) notes.push('Saisonwoche: Halle ' + (c.hall.length ? c.hall.slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map(d => WDN[d]).join(', ') : '–') + (c.match != null ? ' · Spiel ' + WDN[c.match] : '') + '. Keine zusätzliche Sprung-Session neben Halle und Spiel.');
+    else notes.push('Off-Season: Die Sprung-Session ersetzt das Spiel. Läuft doch Hallentraining, fällt sie weg.');
+    let gate = '';
+    if (code === 'A') gate = gateCardHTML('g1', { repCode: 'A' });
+    else if (code === 'B3') gate = gateCardHTML('g2', { repCode: 'B3' });
+    else if (code === 'C1') gate = gateCardHTML('g3', { repCode: 'C1', evalD: evalD });
+    else if (code === 'C2' || code === 'C3') gate = gateCardHTML('g3', { evalD: evalD });
+    const mini = isCur
+      ? '<div class="card block-card" id="mz-dayknee" style="padding:14px 15px"><div id="mz-amp-mini">' + miniAmpHTML() + '</div>' + kneeInputsHTML(isoD(t), false) + '</div>'
+      : '';
+    const ctxh = { ns: m.ns, dk: dk, wi: wi, col: col, ord: CTX.ord, dimPlyo: CTX.dimPlyo, amp: amp };
+    return '<button class="back" data-mzback>' + (typeof IC !== 'undefined' ? IC.back : '‹') + ' Alle Blöcke MZ2</button>'
+      + '<div class="detail-head" style="background:radial-gradient(360px 180px at 92% -20%, ' + col + '33, transparent 60%), linear-gradient(160deg,#191c25,#121319); border-color:' + col + '55">'
+      + '<div class="code" style="color:' + col + '">' + E(code) + (m.occ ? ' <span style="font-size:16px">Wiederholung ' + m.occ + '</span>' : '') + '</div>'
+      + '<h2>' + E(M.t) + '</h2>'
+      + '<div class="wk">W' + (i * 3 + wi + 1) + ' von ' + sq.length * 3 + ' · ' + fmtWD(ws) + ' – ' + fmtWD(we) + ' · ' + (season ? 'Saison' : 'Off-Season') + '</div>'
+      + '<div class="keynote">' + E(M.key) + '</div></div>'
+      + mini
+      + '<div class="weekctl" style="grid-template-columns:repeat(3,1fr)">' + weekTabs + '</div>'
+      + '<div class="segctl mz-days">' + dayTabs + '</div>'
+      + '<div class="prog"><div class="track"><div class="fill" id="mzprogfill" style="width:' + pct + '%;background:' + col + '"></div></div><div class="lbl" id="mzproglbl" style="color:' + col + '">' + pct + '%</div></div>'
+      + '<div class="daytitle">' + E(DAYN[dk]) + ' · ' + E(fmtWD(dd)) + '</div>'
+      + dayInfo
+      + (items.length ? items.map(it => cardHTML(it, ctxh)).join('') : '<div class="card block-card"><div class="ph">Diese Woche keine Einheit an diesem Tag.</div></div>')
+      + contacts
+      + notes.map(x => '<div class="tip" style="margin-bottom:10px"><span>💡</span><span>' + E(x) + '</span></div>').join('')
+      + gate
+      + '<div class="foot" id="mzdayfoot">' + pc.done + '/' + pc.total + ' Sätze an diesem Tag erledigt</div>';
+  }
+  function viewMZ2() {
+    if (MZS.mi == null) { CTX = null; return viewList(); }
+    return viewDetail();
+  }
+
+  /* ---------- Sprung-Tab ---------- */
+  function sparkSVG(labels, series) {
+    const W = 420, H = 132, pl = 30, pr = 10, pt = 12, pb = 22, n = labels.length;
+    const all = [];
+    series.forEach(s => s.vals.forEach(v => { if (v != null) all.push(v); }));
+    if (!all.length) return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mz-spark"><text x="' + W / 2 + '" y="' + H / 2 + '" text-anchor="middle" fill="#6b7280" font-size="13" font-weight="600" font-family="Manrope,sans-serif">Noch keine MZ2-Testwerte</text></svg>';
+    let mn = Math.min.apply(null, all), mx = Math.max.apply(null, all);
+    if (mn === mx) { mn -= 5; mx += 5; }
+    mn = Math.floor(mn - 2); mx = Math.ceil(mx + 2);
+    const X = i => pl + (W - pl - pr) * (n < 2 ? 0.5 : i / (n - 1));
+    const Y = v => pt + (H - pt - pb) * (1 - (v - mn) / (mx - mn));
+    let g = '';
+    for (let k = 0; k <= 2; k++) {
+      const v = mn + (mx - mn) * k / 2, y = Y(v).toFixed(1);
+      g += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y + '" y2="' + y + '" stroke="rgba(255,255,255,.07)"/>'
+        + '<text x="' + (pl - 5) + '" y="' + (+y + 3) + '" text-anchor="end" fill="#6b7280" font-size="9" font-weight="600" font-family="Manrope,sans-serif">' + Math.round(v) + '</text>';
+    }
+    labels.forEach((l, i) => { g += '<text x="' + X(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" fill="#6b7280" font-size="8.5" font-weight="700" font-family="Manrope,sans-serif">' + E(l) + '</text>'; });
+    series.forEach(s => {
+      const pts = [];
+      s.vals.forEach((v, i) => { if (v != null) pts.push([X(i).toFixed(1), Y(v).toFixed(1)]); });
+      if (pts.length >= 2) g += '<polyline fill="none" stroke="' + s.col + '" stroke-width="2.4" stroke-linejoin="round" points="' + pts.map(q => q.join(',')).join(' ') + '"/>';
+      pts.forEach(q => { g += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="3.6" fill="' + s.col + '"/><circle cx="' + q[0] + '" cy="' + q[1] + '" r="1.5" fill="#0c0d11"/>'; });
+    });
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mz-spark" role="img" aria-label="Verlauf Standsprung und Reach">' + g + '</svg>';
+  }
+  function jumpSectionHTML() {
+    const sq = seq(), T = cfg().tests, p = pos(today());
+    let b1 = null, r1 = null;
+    (DB.jump || []).forEach(r => {
+      const a = num(r.squat), b = num(r.approach);
+      if (a != null && (b1 == null || a > b1)) b1 = a;
+      if (b != null && (r1 == null || b > r1)) r1 = b;
+    });
+    const labels = ['MZ1'].concat(sq.map(m => m.code + (m.occ ? '+' : '')));
+    const sjVals = [b1].concat(sq.map(m => num((T[m.ns] || {}).sj)));
+    const rVals = [r1].concat(sq.map(m => num((T[m.ns] || {}).reach)));
+    let prev = b1;
+    const rows = sq.map((m, i) => {
+      const t = T[m.ns] || {}, M = MZ[m.code];
+      const sj = num(t.sj), we = addD(weekStartOf(i, 2), 6);
+      let dStart = '–', dStartCls = '', dPrev = '–', dPrevCls = '', warn = '';
+      if (sj != null && b1 != null) { const d = Math.round((sj - b1) * 10) / 10; dStart = (d > 0 ? '+' : '') + fmtN(d) + ' cm'; dStartCls = d > 0 ? 'up' : (d < 0 ? 'dn' : ''); }
+      if (sj != null && prev != null && prev > 0) {
+        const d = (sj - prev) / prev * 100;
+        dPrev = (d > 0 ? '+' : '') + fmtN(d) + ' %'; dPrevCls = d > 0 ? 'up' : (d < 0 ? 'dn' : '');
+        if (d <= -5) warn = '<div class="mz-warn">⚠️ 5 % oder mehr unter dem letzten Test — der nächste Zyklus beginnt leichter.</div>';
+      }
+      if (sj != null) prev = sj;
+      const active = p.state === 'run' && p.i === i;
+      const empty = !t.sj && !t.reach && !t.visa && !t.notes && !t.date;
+      if (empty && today() < weekStartOf(i, 2)) {
+        return '<div class="card mz-jrow" style="padding:11px 15px' + (active ? ';border-color:' + M.col : ';opacity:.7') + '"><div class="rh" style="margin-bottom:0">'
+          + '<div class="lab">' + E(m.code + (m.occ ? ' · Wiederholung' : '') + ' · ' + M.t) + '<small>Test in W' + (i * 3 + 3) + ' · ab ' + fmtD(weekStartOf(i, 2)) + '</small></div>'
+          + '<div class="ms" style="background:' + M.col + '">' + E(m.code) + '</div></div></div>';
+      }
+      return '<div class="card mz-jrow"' + (active ? ' style="border-color:' + M.col + '"' : '') + '>'
+        + '<div class="rh"><div class="lab">' + E(m.code + (m.occ ? ' · Wiederholung' : '') + ' · ' + M.t) + '<small>Test in W' + (i * 3 + 3) + ' · bis ' + fmtD(we) + '</small></div>'
+        + '<div class="ms" style="background:' + M.col + '">' + E(m.code) + '</div></div>'
+        + '<div class="jgrid">'
+        + '<div class="jfield"><label>Standsprung cm</label><input type="number" inputmode="decimal" data-mzt="' + m.ns + ':sj" value="' + E(t.sj || '') + '" placeholder="–"></div>'
+        + '<div class="jfield"><label>Reach cm</label><input type="number" inputmode="decimal" data-mzt="' + m.ns + ':reach" value="' + E(t.reach || '') + '" placeholder="' + (M.reach || m.code === 'D' ? 'Halle' : '–') + '"></div>'
+        + '<div class="jfield"><label>VISA-P</label><input type="number" inputmode="numeric" min="0" max="100" data-mzt="' + m.ns + ':visa" value="' + E(t.visa || '') + '" placeholder="0–100"></div>'
+        + '</div><div class="jgrid" style="grid-template-columns:1fr 1.6fr">'
+        + '<div class="jfield"><label>Datum</label><input type="date" data-mzt="' + m.ns + ':date" value="' + E(t.date || '') + '"></div>'
+        + '<div class="jfield note"><label>Notizen</label><input type="text" data-mzt="' + m.ns + ':notes" value="' + E(t.notes || '') + '" placeholder="Bedingungen …"></div>'
+        + '</div>'
+        + '<div class="mz-dl"><div class="d">Stand vs. MZ1-Bestwert<b class="' + dStartCls + '">' + dStart + '</b></div><div class="d">vs. letzter Test<b class="' + dPrevCls + '">' + dPrev + '</b></div></div>'
+        + warn + '</div>';
+    }).join('');
+    return '<div id="mz-jump">'
+      + '<div class="section-eyebrow" style="margin-top:22px">Makrozyklus 2 · Tests</div>'
+      + '<div class="card chart-card">' + sparkSVG(labels, [{ col: '#ff7a1a', vals: sjVals }, { col: '#60a5fa', vals: rVals }])
+      + '<div class="legend"><span><i style="background:var(--accent)"></i>Standsprung</span><span><i style="background:#60a5fa"></i>Reach (Sprunghöhe)</span></div></div>'
+      + '<div class="card rm-intro"><p>Standsprung und VISA-P alle 3 Wochen in der Entlastungswoche, Reach etwa alle 6 Wochen. Der Standsprung-Test aus dem Training wird automatisch übernommen (bester Versuch). MZ1-Bestwert: Standsprung <b>' + (b1 != null ? fmtN(b1) + ' cm' : '–') + '</b>, Reach <b>' + (r1 != null ? fmtN(r1) + ' cm' : '–') + '</b>. VISA-P ist der Standard-Fragebogen bei Patellasehnen-Beschwerden: 0–100, 100 heißt beschwerdefrei.</p></div>'
+      + rows + '</div>';
+  }
+  function syncTest(ns, exK, field) {
+    const pre = 'z2:' + ns + ':';
+    let best = null;
+    Object.keys(DB.training.log).forEach(k => {
+      if (k.indexOf(pre) !== 0) return;
+      const pt = k.split(':');
+      if (pt[4] !== exK) return;
+      const v = num((DB.training.log[k] || {}).cm);
+      if (v != null && (best == null || v > best)) best = v;
+    });
+    if (best == null) return;
+    const T = cfg().tests;
+    T[ns] = T[ns] || {};
+    T[ns][field] = String(best);
+    if (!T[ns].date) T[ns].date = isoD(today());
+    persist();
+  }
+
+  /* ---------- Guide ---------- */
+  function guideHTML() {
+    const P = [
+      ['Long Conjugate statt Blöcke', 'Kraft, Power und Sprünge laufen das ganze Jahr parallel, nur die Anteile verschieben sich. Cleans und eine kleine Sprungdosis sind in jeder Phase dabei; das Defizit bekommt das meiste Volumen.'],
+      ['Die Sehne zuerst', 'Stufen wie in der Reha: Isometrie → schwer und langsam (3 s / 3 s) → exzentrische Überlast → schnell → Plyos. Mindestens drei Wochen je Stufe, weiter nur bei Grün. Sehnen werden durch hohe Spannung über lange Zeit belastbar; Plyos machen sie bei Erwachsenen nicht steifer.'],
+      ['3-Wochen-Zyklen', 'Zwei Aufbauwochen, eine Entlastung mit rund 40 % weniger Sätzen bei gleicher Last. 48–72 h zwischen harten Sehnentagen; harte Tage bündeln (Gym am Hallentag, Gym zuerst). Nach einem Doppelspieltag oder Turnier wird die Folgewoche zur Entlastung.'],
+      ['Sprungdosis mit Deckel', 'Gym-Kontakte pro Woche: Phase A 20 · B 40 · C bis 52 (davon bis 32 intensiv) · D bis 32. In der Saison sind Halle und Spiel der Sprungreiz. Die Sprung-Session mit Timer gibt es erst in der Off-Season: 5 min, pro Woche 5 min mehr, Deckel 20 min, nie verlängern.'],
+      ['Gesteuert wird über die Sehne', 'Im Kraftraum bis 2/10, Maximalsprünge nur schmerzfrei, den Sprungteil bei 3/10 beenden. Das Aufwärmen ist der Test: Wird es von Satz zu Satz besser? Entscheidend ist der Stand nach 48 h. Die Ampel auf der Übersicht rechnet das aus Morgen-Check und Trainingsschmerz.'],
+      ['Übergänge statt Kalender', 'A → B: sieben Tage Morgen-Check bis 2, Training bis 2, keine Reaktion über 48 h. B → C: neun Wochen Heavy-Slow, drei Wochen ohne Rot, einbeinige Kniebeuge auf dem Schrägbrett bis 1, Beinstrecker links und rechts höchstens 10 % auseinander. Kurze Kontakte erst nach drei Wochen durchgehend Grün. Verfehlt? Mesozyklus wiederholen.'],
+      ['Tests', 'Alle drei Wochen in der Entlastung: Standsprung (3 Versuche) und VISA-P. Etwa alle sechs Wochen Reach. In W12 und W23 das 3RM in Kniebeuge und Hang Power Clean, nur bei Grün. Fällt der Standsprung um 5 % oder mehr, beginnt der nächste Zyklus leichter.'],
+      ['Saison und Off-Season', 'Die ersten 13 Wochen laufen in der Saison: zwei Bein-Einheiten erhalten die Kraft, eine schwere pro Woche ist das Minimum. Nach Saisonende ersetzt die Sprung-Session am Samstag das Spiel. Depth Jumps erst in C3, nur von 30 cm.']
+    ];
+    const cards = P.map((x, i) => '<div class="card gp" style="border-left-color:#2dd4bf"><h4><span class="num" style="color:#2dd4bf">' + p2(i + 1) + '</span>' + E(x[0]) + '</h4><p>' + E(x[1]) + '</p></div>').join('');
+    const amp = '<div class="card mz-amptbl"><h3>Knie-Ampel</h3>'
+      + '<div class="r"><span class="mz-amp green">Grün</span><p><b>Kraftraum bis 2, Maximalsprünge schmerzfrei, morgens wie gewohnt.</b> Plan fahren, nach der Entlastung steigern.</p></div>'
+      + '<div class="r"><span class="mz-amp yellow">Gelb</span><p><b>3/10 in einer Übung, Aufwärmen wird nicht besser oder Morgenwert 1–2 über normal.</b> Weniger Tiefe, leichter, langsamer; Gym-Sprünge streichen; in der Halle bei 3 aufhören.</p></div>'
+      + '<div class="r"><span class="mz-amp red">Rot</span><p><b>4/10 oder mehr, oder Morgenwert über 48 h mindestens 2 über normal.</b> Eine Woche Phase-A-Inhalte, Gym-Sprünge null, Hallensprünge reduzieren.</p></div>'
+      + '<div class="mz-note">Schwellung, Blockieren, Wegknicken oder Ruheschmerz gehören nicht in die Ampel, sondern zum Arzt. Ob deine Schmerzen von der Patellasehne kommen, sollte ein Arzt oder Physio klären.</div></div>';
+    return '<div id="mz-guide"><div class="section-eyebrow" style="margin-top:22px">Makrozyklus 2 · Sehne → Power</div><div class="stagger">' + cards + '</div>' + amp + '</div>';
+  }
+
+  /* ---------- MZ1: Hinweis in M5/M6 ---------- */
+  function m56HTML() {
+    const a = ampelNow();
+    return '<div class="card block-card" id="mz-m56" style="border-left:4px solid ' + ampColor(a.st) + '">'
+      + ampPill(a.st, 'Knie-Ampel: ')
+      + '<div class="ph" style="color:var(--text);margin-top:10px;line-height:1.55">M5 und M6 sind fürs Knie riskant geschrieben: Singles über 90 %, Depth Jumps und Reactive Box Jumps. '
+      + '<b>Bei Gelb oder Rot:</b> diese streichen und die Kniebeuge als Heavy-Slow machen (3 s / 3 s, etwa 70 %). <b>Bei Grün:</b> Sprünge nur schmerzfrei, den Sprungteil bei 3/10 beenden.</div>'
+      + '<div style="margin-top:12px"><button class="btn ghost" data-nav="home">Knie-Check auf der Übersicht</button></div></div>';
+  }
+
+  /* ---------- Nachbearbeitung der Basis-Ansichten ---------- */
+  function postHome() {
+    KSEL = isoD(today());
+    const p = pos(today());
+    const hero = screen.querySelector('.hero');
+    if (!hero) return;
+    if (p.state === 'pre') {
+      const nx = hero.nextElementSibling;
+      const anchor = (nx && nx.classList.contains('block-card')) ? nx : hero;
+      anchor.insertAdjacentHTML('afterend', teaserHTML(p) + kneeCardHTML());
+    } else {
+      const nx = hero.nextElementSibling;
+      if (nx && nx.classList.contains('block-card')) nx.remove();
+      hero.insertAdjacentHTML('afterend', todayHTML(p) + gateReminderHTML(p) + kneeCardHTML());
+      hero.outerHTML = heroHTML(p);
+      const eb = Array.prototype.find.call(screen.querySelectorAll('.section-eyebrow'), x => x.textContent.trim() === 'Trainings-Prinzip');
+      const pc = eb && eb.nextElementSibling && eb.nextElementSibling.querySelector('.ph');
+      if (pc) pc.textContent = 'Gesteuert wird über die Reaktion der Sehne, nicht über den Kalender. Schwer und langsam zuerst, Sprünge mit Deckel, und jeder Übergang muss verdient sein.';
+    }
+  }
+  function postJump() {
+    const foots = screen.querySelectorAll('.foot');
+    const foot = foots[foots.length - 1];
+    if (foot) foot.insertAdjacentHTML('beforebegin', jumpSectionHTML());
+    else screen.insertAdjacentHTML('beforeend', jumpSectionHTML());
+  }
+  function postGuide() {
+    const foots = screen.querySelectorAll('.foot');
+    const foot = foots[foots.length - 1];
+    if (foot) foot.insertAdjacentHTML('beforebegin', guideHTML());
+    else screen.insertAdjacentHTML('beforeend', guideHTML());
+  }
+  function post() {
+    if (S.view === 'home') postHome();
+    else if (S.view === 'training') {
+      if (S.mesoIdx == null) screen.insertAdjacentHTML('afterbegin', macroSwitch());
+      else if (S.mesoIdx === 4 || S.mesoIdx === 5) {
+        const head = screen.querySelector('.detail-head');
+        if (head && !screen.querySelector('#mz-m56')) head.insertAdjacentHTML('afterend', m56HTML());
+      }
+    } else if (S.view === 'jump') postJump();
+    else if (S.view === 'guide') postGuide();
+  }
+
+  /* ---------- render + Badge umhüllen ---------- */
+  const baseRender = render;
+  const baseBadge = updateWkBadge;
+  render = function () {
+    acClear();
+    if (S.view === 'training') {
+      if (S.mesoIdx != null) MZS.macro = 'mz1';
+      if (!MZS.macro) MZS.macro = defaultMacro();
+      if (MZS.macro === 'mz2') {
+        buildTabs(); updateWkBadge();
+        let html;
+        try { html = viewMZ2(); }
+        catch (err) {
+          console.error('[MZ2]', err);
+          html = macroSwitch() + '<div class="card block-card"><h3>Fehler im MZ2-Add-on</h3><div class="ph">' + E(err && err.message) + '</div></div>';
+        }
+        screen.innerHTML = html; screen.scrollTop = 0; window.scrollTo(0, 0);
+        return;
+      }
+    }
+    baseRender();
+    try { post(); } catch (err) { console.error('[MZ2]', err); }
+  };
+  updateWkBadge = function () {
+    let p = null;
+    try { p = pos(today()); } catch (err) { p = null; }
+    const b = document.getElementById('wkBadge');
+    if (b && p && p.state === 'run') { b.innerHTML = '<b>W' + (p.wk + 1) + '</b><span>von ' + p.total + ' · MZ2</span>'; return; }
+    if (b && p && p.state === 'done') { b.innerHTML = '<b>MZ2</b><span>fertig</span>'; return; }
+    baseBadge();
+  };
+
+  /* ---------- Navigation ---------- */
+  function openMZ(i, wi, dk) {
+    const p = pos(today());
+    S.view = 'training'; S.mesoIdx = null;
+    MZS.macro = 'mz2'; MZS.mi = i;
+    MZS.wi = wi != null ? wi : (p.state === 'run' && p.i === i ? p.wi : 0);
+    MZS.di = dk || null;
+    render();
+  }
+
+  /* ---------- Events ---------- */
+  screen.addEventListener('click', ev => {
+    const t = ev.target;
+    let b;
+    if ((b = t.closest('[data-mzmacro]'))) { MZS.macro = b.dataset.mzmacro; S.mesoIdx = null; MZS.mi = null; render(); return; }
+    if ((b = t.closest('[data-mzgate]'))) { ev.preventDefault(); ev.stopPropagation(); gateAction(b.dataset.mzgate); return; }
+    if ((b = t.closest('[data-mzopen]'))) {
+      const a = b.dataset.mzopen.split(':');
+      openMZ(+a[0], a[1] != null && a[1] !== '' ? +a[1] : null, a[2] || null);
+      return;
+    }
+    if ((b = t.closest('[data-mzgo]'))) {
+      if (b.dataset.mzgo === 'list') { S.view = 'training'; S.mesoIdx = null; MZS.macro = 'mz2'; MZS.mi = null; render(); }
+      return;
+    }
+    if ((b = t.closest('[data-mzback]'))) { MZS.mi = null; render(); return; }
+    if ((b = t.closest('[data-mzweek]'))) { MZS.wi = +b.dataset.mzweek; render(); return; }
+    if ((b = t.closest('[data-mzday]'))) { MZS.di = b.dataset.mzday; render(); return; }
+    if ((b = t.closest('[data-mzrm]'))) {
+      const a = b.dataset.mzrm.split(':'), v = +a[1];
+      if (a[0] && v > 0) {
+        DB.onerm[a[0]] = v; saveKey('vb_onerm', DB.onerm);
+        b.textContent = '✓ ist 1RM'; b.disabled = true;
+      }
+      return;
+    }
+    if ((b = t.closest('[data-mzset]'))) { toggleSet(b); return; }
+    if ((b = t.closest('[data-mzwarm]'))) {
+      const box = b.closest('[data-mzkd]');
+      if (!box) return;
+      const ds = box.dataset.mzkd, s = cfg().sess, v = b.dataset.mzwarm;
+      s[ds] = s[ds] || {};
+      s[ds].warm = s[ds].warm === v ? '' : v;
+      if (!s[ds].warm && (s[ds].p == null || s[ds].p === '')) delete s[ds];
+      persist();
+      box.querySelectorAll('[data-mzwarm]').forEach(x => x.classList.toggle('on', !!s[ds] && x.dataset.mzwarm === s[ds].warm));
+      refreshKneeLive();
+      return;
+    }
+    if ((b = t.closest('[data-mzsch]'))) {
+      const a = b.dataset.mzsch.split(':'), key = a[0], d = +a[1], c = cfg();
+      if (key === 'hall') { const k = c.hall.indexOf(d); if (k >= 0) c.hall.splice(k, 1); else c.hall.push(d); }
+      else if (key === 'match') c.match = c.match === d ? null : d;
+      else c.sched[key] = d;
+      persist();
+      const card = document.getElementById('mz-sched');
+      if (card) card.outerHTML = schedCardHTML();
+      return;
+    }
+    if ((b = t.closest('[data-mztimer]'))) {
+      const a = b.dataset.mztimer;
+      if (a === 'start') {
+        if (TIMER.left <= 0) return;
+        TIMER.run = true; TIMER.endAt = Date.now() + TIMER.left;
+        clearInterval(TIMER.iv); TIMER.iv = setInterval(timerTick, 250);
+      } else if (a === 'pause') {
+        TIMER.run = false; TIMER.left = Math.max(0, TIMER.endAt - Date.now());
+        clearInterval(TIMER.iv); TIMER.iv = null;
+      } else if (a === 'reset') {
+        TIMER.run = false; clearInterval(TIMER.iv); TIMER.iv = null; TIMER.left = TIMER.total;
+      }
+      paintTimer();
+      return;
+    }
+  });
+  function toggleSet(btn) {
+    if (!CTX) return;
+    const a = btn.dataset.mzset.split(':'), exK = a[0], s = a[1];
+    const k = 'z2:' + CTX.ns + ':' + CTX.dk + ':' + CTX.wi + ':' + exK + ':' + s;
+    const now = !DB.training.done[k];
+    if (now) DB.training.done[k] = true; else delete DB.training.done[k];
+    persistT();
+    btn.classList.toggle('done', now);
+    btn.style.background = now ? CTX.col : '';
+    const panel = document.getElementById('mzp-' + exK + '-' + s);
+    if (panel) {
+      const open = panel.classList.contains('open');
+      const box = btn.closest('.sets');
+      box.querySelectorAll('.set-log-panel').forEach(x => x.classList.remove('open'));
+      box.querySelectorAll('.setbox').forEach(x => x.classList.remove('active-log'));
+      if (!open) {
+        panel.classList.add('open'); btn.classList.add('active-log');
+        setTimeout(() => { const inp = panel.querySelector('input'); if (inp) inp.focus(); }, 50);
+      }
+    }
+    updateProg();
+  }
+  function gateAction(cmd) {
+    const a = cmd.split(':'), op = a[0], arg = a[1], c = cfg();
+    if (op === 'confirm') c.gates[arg] = isoD(today());
+    else if (op === 'unconfirm') delete c.gates[arg];
+    else if (op === 'repeat') {
+      if (!window.confirm(arg + ' wiederholen? Der Plan verschiebt sich um 3 Wochen, deine bisherigen Einträge bleiben erhalten.')) return;
+      c.rep[arg] = Math.min(5, (c.rep[arg] | 0) + 1);
+      const p = pos(today());
+      if (MZS.mi != null && p.state === 'run') { MZS.mi = p.i; MZS.wi = p.wi; MZS.di = null; }
+    } else if (op === 'undo') {
+      c.rep[arg] = Math.max(0, (c.rep[arg] | 0) - 1);
+      if (!c.rep[arg]) delete c.rep[arg];
+    }
+    persist();
+    keepScroll(render);
+  }
+  screen.addEventListener('input', ev => {
+    const t = ev.target, d = t.dataset || {};
+    if (d.mzlog && CTX) {
+      const a = d.mzlog.split(':'), exK = a[0], s = a[1], f = a[2];
+      const k = 'z2:' + CTX.ns + ':' + CTX.dk + ':' + CTX.wi + ':' + exK + ':' + s;
+      DB.training.log[k] = DB.training.log[k] || {};
+      DB.training.log[k][f] = t.value;
+      persistT();
+      const it = CTX.items.find(x => x.k === exK);
+      const sp = document.getElementById('mzls-' + exK + '-' + s);
+      if (sp && it) sp.innerHTML = summary(it, DB.training.log[k]);
+      if (it && it.L.sync && f === 'cm') syncTest(CTX.ns, exK, it.L.sync);
+      return;
+    }
+    if (d.mzk && d.mzk !== 'date') {
+      const box = t.closest('[data-mzkd]'), ds = box ? box.dataset.mzkd : isoD(today());
+      const clamp = v => { const n = num(v); return n == null ? '' : String(Math.max(0, Math.min(10, n))); };
+      if (d.mzk === 'p') {
+        const s = cfg().sess;
+        s[ds] = s[ds] || {};
+        s[ds].p = clamp(t.value);
+        if (s[ds].p === '' && !s[ds].warm) delete s[ds];
+        persist();
+      } else {
+        const st = kneeStore();
+        st[ds] = st[ds] || {};
+        st[ds][d.mzk] = d.mzk === 'n' ? t.value : clamp(t.value);
+        persist();
+      }
+      refreshKneeLive();
+      return;
+    }
+    if (d.mzgin) {
+      cfg().gates[d.mzgin] = t.value;
+      persist();
+      acClear();
+      const card = t.closest('.mz-gate');
+      if (!card) return;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = gateCardHTML(card.id.replace('mz-gate-', ''), { repCode: card.dataset.rep || null });
+      const fresh = tmp.firstElementChild, nlis = fresh.querySelectorAll('li');
+      card.querySelectorAll('li').forEach((li, idx) => {
+        const nl = nlis[idx];
+        if (!nl) return;
+        const ic = li.querySelector('.ic'), nic = nl.querySelector('.ic');
+        if (ic && nic) { ic.className = nic.className; ic.textContent = nic.textContent; }
+        const sm = li.querySelector('small'), nsm = nl.querySelector('small');
+        if (sm && nsm) sm.textContent = nsm.textContent;
+      });
+      const tag = card.querySelector('.tag'), ntag = fresh.querySelector('.tag');
+      if (tag && ntag) { tag.textContent = ntag.textContent; tag.style.background = ntag.style.background; }
+      card.style.borderLeftColor = fresh.style.borderLeftColor;
+      const cb = card.querySelector('[data-mzgate^="confirm"]'), ncb = fresh.querySelector('[data-mzgate^="confirm"]');
+      if (cb && ncb) cb.className = ncb.className;
+      return;
+    }
+    if (d.mzt) {
+      const a = d.mzt.split(':'), ns = a[0], f = a[1], T = cfg().tests;
+      T[ns] = T[ns] || {};
+      T[ns][f] = t.value;
+      persist();
+      return;
+    }
+  });
+  screen.addEventListener('change', ev => {
+    const t = ev.target, d = t.dataset || {};
+    if (d.mzk === 'date') {
+      KSEL = t.value || isoD(today());
+      const card = document.getElementById('mz-knee');
+      if (card) card.outerHTML = kneeCardInner();
+      return;
+    }
+    if (d.mzcfg) {
+      cfg()[d.mzcfg] = t.value || '';
+      if (!t.value) delete cfg()[d.mzcfg];
+      persist();
+      keepScroll(render);
+      return;
+    }
+    if (d.mzgchk) {
+      cfg().gates[d.mzgchk] = !!t.checked;
+      persist();
+      keepScroll(render);
+      return;
+    }
+    if (d.mzt && (d.mzt.split(':')[1] === 'sj' || d.mzt.split(':')[1] === 'reach')) {
+      const sec = document.getElementById('mz-jump');
+      if (sec) keepScroll(() => { sec.outerHTML = jumpSectionHTML(); });
+    }
+  });
+
+  /* ---------- Start ---------- */
+  render();
+})();
+</script>
 </body>
 </html>
